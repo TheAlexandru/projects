@@ -1,12 +1,87 @@
 /*Santa style:*/
 .santa{
-    width:50px;
-    height:70px;
+
+ /*   
+    width:40px;
+    height:52px;
     border: 1px solid blue;
+    */
+    /*background-image: url(images/santa_sprite.gif);*/
+   /* background-position: -312px -3px;*/
+   
+    
+    
 }
 
 .santa::before{
+    margin-top:87px;
+    content:'';
+    border:1px solid red;
+    background-image: url(images/santa_sprite.gif);
+    background-position: -312px -3px;
+    display: inline-block;
+     width:40px;
+    height:52px;
+   
+}
+
+    /*Move to rigt */
+.r_1::before{
+    background-position: -230px -295px; 
+}
+.r_2::before{
+    background-position: -271px -295px; 
+}
+.r_3::before{
+    background-position: -309px -293px; 
+    height:54px;
+    margin-top:85px;
+   
     
+}
+.r_4::before{
+    background-position: -347px -293px;  
+    height:54px;
+    margin-top:85px;
+   
+}
+.r_5::before{
+    background-position: -387px -293px; 
+    height:54px;
+    margin-top:85px;
+   
+    
+}
+.r_6::before{
+    background-position: -225px -238px; 
+    height:53px;
+    margin-top:86px;
+   
+    
+}
+.r_7::before{
+    background-position: -262px -238px; 
+    height:53px;
+    width:37px;
+    margin-top:86px;
+}
+.r_8::before{
+    background-position: -299px -238px; 
+    height:53px;
+    width:37px;
+    margin-top:86px;
+}
+.r_9::before{
+    background-position: -338px -238px;  
+    height:53px;
+    width:40px;
+    margin-top:86px;
+}
+.r_10::before{
+    background-position: -380px -238px;  
+    height:53px;
+    width:40px;
+    margin-top:86px;
 }
 
 /*END SANTA style*/
