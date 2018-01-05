@@ -14,15 +14,20 @@
 }
 
 .santa::before{
-    margin-top:87px;
+    /*margin-top:87px;*/
+    margin-top:91px;
     content:'';
     border:1px solid red;
     background-image: url(images/santa_sprite.gif);
-    background-position: -312px -3px;
+    /*background-position: -312px -3px;*/
+    background-position: -316px -163px;
+   
+   
     
     display: inline-block;
      width:40px;
-    height:52px;
+    /*height:52px;*/
+    height:48px;
    
 }
 
@@ -143,6 +148,59 @@
     height:53px;
     width:40px;
     margin-top:86px;
+}
+
+    /*Jump to Right*/
+
+.j_r1::before{
+    background-position: -229px -112px;
+}
+.j_r2::before{
+    background-position: -272px -112px;
+    width:41px;
+}
+.j_r3::before{
+    background-position: -317px -112px;
+    width:47px;
+}
+.j_r4::before{
+    background-position: -367px -112px;
+}
+    
+    /*Jump to Left*/
+.j_l1::before{
+    background-position: -182px -112px;
+}
+.j_l2::before{
+    background-position: -140px -112px;
+    width:41px;
+}
+.j_l3::before{
+    background-position: -87px -112px;
+    width:47px;
+}
+.j_l4::before{
+    background-position: -46px -112px;
+}
+
+
+  /*Hide to Right*/
+.h_r1{
+    margin-top:01px;
+    height:48px;
+    background-position: -229px -163px;
+}
+.h_r2{
+    margin-top:01px;
+    height:48px;
+    width:41px;
+    background-position: -272px -163px;
+}
+.h_r3{
+    margin-top:01px;
+    height:48px;
+    width:42px;
+    background-position: -316px -163px;
 }
 
 /*END SANTA style*/
