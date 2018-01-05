@@ -14,20 +14,14 @@
 }
 
 .santa::before{
-    /*margin-top:87px;*/
-    margin-top:91px;
+     margin-top:87px;
     content:'';
     border:1px solid red;
     background-image: url(images/santa_sprite.gif);
-    /*background-position: -312px -3px;*/
-    background-position: -316px -163px;
-   
-   
-    
+    background-position: -312px -3px;
     display: inline-block;
      width:40px;
-    /*height:52px;*/
-    height:48px;
+    height:52px;
    
 }
 
@@ -185,22 +179,28 @@
 
 
   /*Hide to Right*/
-.h_r1{
-    margin-top:01px;
+.h_r1::before{
+    margin-top:91px;
     height:48px;
     background-position: -229px -163px;
 }
-.h_r2{
-    margin-top:01px;
+.h_r2::before{
+    margin-top:91px;
     height:48px;
     width:41px;
     background-position: -272px -163px;
 }
-.h_r3{
-    margin-top:01px;
+.h_r3::before{
+    margin-top:91px;
     height:48px;
     width:42px;
     background-position: -316px -163px;
+}
+.h_r4::before{
+    margin-top:91px;
+    height:48px;
+    width:47px;
+    background-position: -361px -163px;
 }
 
 /*END SANTA style*/
