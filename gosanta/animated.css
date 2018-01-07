@@ -203,4 +203,28 @@
     background-position: -361px -163px;
 }
 
+  /*Hide to Left*/
+.h_l1::before{
+    margin-top:92px;
+    height:48px;
+    background-position: -182px -163px;
+}
+.h_l2::before{
+    margin-top:93px;
+    height:46px;
+    width:41px;
+    background-position: -139px -164px;
+}
+.h_l3::before{
+    margin-top:93px;
+    height:46px;
+    width:42px;
+    background-position: -94px -165px;
+}
+.h_l4::before{
+    margin-top:93px;
+    height:46px;
+    width:46px;
+    background-position: -44px -165px;
+}
 /*END SANTA style*/

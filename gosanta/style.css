@@ -1,19 +1,70 @@
 #playarena{
-    width:800px;
+    width:726px;
     height:500px;
     margin: auto;
     border: 1px solid #777;
     position: relative;
+    background-color:#60A4B5;
 }
 .field{
     float:left;
-    width:78px;
+    width:66px;
     height:140px;
-    border:1px dotted red;
+   /* border:0px dotted red;*/
 }
 .status_bar{
     width:100%;
     height:72px;
     border:1px dotted darkred;
     float:left;
+}
+
+.fleft::before{
+    content:'';
+    background-image: url(images/obstacles&ground_v2.png);
+    width:69px;
+    height:35px;
+    display: inline-block;
+    margin-top: -2px;
+    background-position: -361px -292px;
+}
+
+.fmiddle::before{
+    content:'';
+    background-image: url(images/obstacles&ground_v2.png);
+    width:66px;
+    height:35px;
+    display: inline-block;
+    margin-top: -2px;
+    background-position: -363px -221px;
+    
+}
+
+.fright::before{
+    content:'';
+    background-image: url(images/obstacles&ground_v2.png);
+    width:66px;
+    height:35px;
+    display: inline-block;
+    margin-top: -2px;
+    
+    background-position: -434px -221px;
+}
+
+.fr_border::before{
+    content:'';
+    width:40px;
+    height:426px;
+    display: inline-block;
+    margin-left:67px;
+    margin-top:-144px;
+    background-color: white;
+}
+
+.bar{
+    width: 6px;
+    height:130px;
+    margin-left:30px;
+    margin-top:-30px;
+    background-image: url(images/bar.png);
 }
