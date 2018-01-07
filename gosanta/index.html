@@ -9,7 +9,9 @@
 <body onkeydown="move(event)" onkeyup="stop(event)">
     <div id="arena" >
         <div id="playarena">
-           <div class="field"><div class="santa" id="santa"></div></div>
+           <div class="field">
+               <div class="santa" id="santa"></div>
+           </div>
            <div class="field"></div>
            <div class="field"></div>
            <div class="field"></div>
@@ -21,7 +23,10 @@
            <div class="field"></div>
            <div class="field"></div>
            <!-- end first line -->
-              <div class="field fleft"></div>
+             
+            <div class="field fleft">
+                <div class="field_l_border"></div>
+            </div>
            <div class="field fmiddle"></div>
            <div class="field fmiddle"></div>
            <div class="field fmiddle"></div>
@@ -33,13 +38,15 @@
            <div class="field fmiddle"></div>
            <div class="field fmiddle"></div>
            <div class="field fmiddle"></div>
-           <div class="field fright "><div class="fr_border"></div></div>
-           
+           <div class="field fright ">
+               <div class="field_r_border"></div>
+           </div>
            <!-- end econd line -->
+              
                <div class="field fleft" ></div>
            <div class="field fmiddle"></div>
            <div class="field fright"></div>
-           <div class="field "></div>
+           <div class="field "><div class="bar"></div></div>
            <div class="field fleft"></div>
            <div class="field fmiddle"></div>
            <div class="field fmiddle"></div>
@@ -47,8 +54,19 @@
            <div class="field fmiddle"></div>
            <div class="field fmiddle"></div>
            <div class="field fright"></div>
-           
            <!-- end third line -->
+           
+            <div class="bottom fleft" ></div>
+           <div class="bottom fmiddle"></div>
+           <div class="bottom fmiddle"></div>
+           <div class="bottom fmiddle"></div>
+           <div class="bottom fmiddle"></div>
+           <div class="bottom fmiddle"></div>
+           <div class="bottom fmiddle"></div>
+           <div class="bottom fmiddle"></div>
+           <div class="bottom fmiddle"></div>
+           <div class="bottom fmiddle"></div>
+           <div class="bottom fright"></div>
            <div class="status_bar">
                Santa: Hi my name is Jeff!!!
                <br>

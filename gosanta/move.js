@@ -15,7 +15,6 @@ var obstacles = [
     {name: '2 level Bar', enable: false}
     ];
 function stop(e){
-    console.log(obstacles[0].enable);
     if(obstacle==false){
         document.body.setAttribute('onkeydown','move(event)');
     }
@@ -77,21 +76,28 @@ function startMove(nav){
         santaPosition = "3 level";
     }else if(santaTop>10 && santaTop<280){
         santaPosition = "2 level";
+    }else if(santaTop>280){
+        santaPosition = "1 level";
     }
     
     //find obstacles
     if(nav=='right'){
         if(santaLeft>295 && santaLeft<330 && santaPosition=='3 level'){
             obstacles[0].enable = true;
+        }else if(santaLeft>168 && santaLeft<180 && santaPosition=='2 level'){
+            obstacles[1].enable = true;
         }else{
             obstacles[0].enable = false;
+            obstacles[1].enable = false;
         }
     }else if(nav=='left'){
         if(santaLeft>360 && santaLeft<390 && santaPosition=='3 level'){
-            console.log('goleft');
             obstacles[0].enable = true;
+        }else if(santaLeft>235 && santaLeft<250 && santaPosition=='2 level'){
+            obstacles[1].enable = true;
         }else{
             obstacles[0].enable = false;
+            obstacles[1].enable = false;
         }
     }
     
@@ -100,11 +106,11 @@ function startMove(nav){
     if(nav == 'right'){    
         setTimeout(function(){
                 if(stopped != true){
-                    if(obstacles[0].enable==true){
+                    if(obstacles[0].enable==true || obstacles[1].enable==true){
                         obstacle=true;
                         stop();  
                     }
-                    santaLeft>=710 ? santaLeft=0 : santaLeft +=5;
+                    santaLeft>=710 ? santaLeft=-25 : santaLeft +=5;
                     santa.classList.remove(`r_${stepNr}`);
                     stepNr > 9 ? stepNr=1 : stepNr++;   
                     santa.classList.add(`r_${stepNr}`);
@@ -120,11 +126,21 @@ function startMove(nav){
     if(nav == 'left'){
         setTimeout(function(){
             if(stopped != true){
-                if(obstacles[0].enable==true){
+                if(obstacles[0].enable==true|| obstacles[1].enable==true){
                         obstacle=true;
                         stop();  
                     }
-                santaLeft<=0 ? santaLeft=710 : santaLeft -=5;
+                if(santaPosition=='1 level' && santaLeft<=-25){
+                //go back to 3 level
+                    santaTop=0;
+                    santaLeft=710;
+                    santa.style.marginLeft = `${santaLeft}px`;
+                    santa.style.marginTop = `${santaTop}px`;
+                    
+                    
+                    
+                }
+                santaLeft<=-25 && (santaPosition=='3 level'|| santaPosition=='2 level') ? santaLeft=710 : santaLeft -=5;
                 santa.classList.remove(`l_${stepNr}`);
                 stepNr > 9 ? stepNr=1 : stepNr++;
                 santa.classList.add(`l_${stepNr}`);
@@ -138,6 +154,8 @@ function startMove(nav){
     //Jump to left&right or exit from hide.
     if(nav == 'up'){
         document.body.removeAttribute('onkeyup','stop(event)');
+        document.body.removeAttribute('onkeydown','move(event)');
+        
         if(hidden==false){
             jump = true;
             if(lastPosition=='right'){
@@ -226,25 +244,56 @@ function startMove(nav){
     
     //hide or go down:
     if(nav == 'down'){
-        if(obstacles[0].enable== true){
+        //if bar, go down
+        if(obstacles[0].enable== true || obstacles[1].enable== true){
             hidden=false;
             document.body.removeAttribute('onkeyup','stop(event)');
+            document.body.removeAttribute('onkeydown','move(event)');
             setTimeout(function(){
-                stepNr > 4 ? stepNr =1 : stepNr++;
-                santaTop +=10;
-                santa.style.marginTop = `${santaTop}px`;
-                if(santaTop>130){
-                    obstacles[0].enable = false;
-                    
-                    
-                    stop()
-                }else{
-                    startMove(nav);
-                };
+                stepNr > 17 ? stepNr =1 : stepNr++;
                 
-                console.log('TOP:',santaTop);
+                if(stepNr>=1 && stepNr<4){
+                   santaTop+=1;
+                   santa.classList.add(`sl_1`);
+                }else if(stepNr>=3 && stepNr <=12){
+                    santaTop +=10;
+                    santa.classList.add(`sl_2`);
+                }else if(stepNr>12){
+                    santaTop +=10;
+                    santa.classList.add(`sl_3`);  
+                }
+                
+                
+                
+                if(obstacles[0].enable== true ){
+                    santa.style.marginLeft = '338px';
+                    if(santaTop>145){
+                        obstacles[0].enable = false;
+                        stop();
+                    }else{
+                        startMove(nav);
+                    };
+                    
+                }else if(obstacles[1].enable== true){
+                    santa.style.marginLeft = '205px';
+                    if(santaTop>287){
+                        obstacles[1].enable = false;
+                        stop();
+                    }else{
+                        startMove(nav);
+                    };
+                }
+                
+                
+                /*else if(obstacles[1].enable== true){
+                    
+                    
+                }*/
+                
+                santa.style.marginTop = `${santaTop}px`;
+        
             },80);
-        }else{
+        }else{ // hide
             document.body.removeAttribute('onkeyup','stop(event)');
             setTimeout(function(){
                 if(lastPosition=='right'){

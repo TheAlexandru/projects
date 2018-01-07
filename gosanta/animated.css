@@ -14,14 +14,17 @@
 }
 
 .santa::before{
+    position: absolute;
      margin-top:87px;
     content:'';
-    border:1px solid red;
+    /*border:1px solid red;*/
     background-image: url(images/santa_sprite.gif);
     background-position: -312px -3px;
+    
     display: inline-block;
-     width:40px;
+    width:40px;
     height:52px;
+    z-index: 10;
    
 }
 
@@ -226,5 +229,20 @@
     height:46px;
     width:46px;
     background-position: -44px -165px;
+}
+
+ /* Slide down */
+
+.sl_1::before{
+    background-position: -336px -353px; 
+    width:34px;
+}
+.sl_2::before{
+    background-position: -368px -353px; 
+    width:32px;
+}
+.sl_3::before{
+    background-position: -291px -351px; 
+    width:45px;
 }
 /*END SANTA style*/
