@@ -87,3 +87,14 @@
     background-image: url(images/bar.png);
     position: relative;
 }
+
+.snowball{
+    margin-left:10px;
+    
+    width:10px;
+    height:10px;
+    background-image: url(images/obstacles.png);
+    background-position: -33px -33px;
+    background-size: 130px;
+   
+}

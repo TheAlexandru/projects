@@ -1,8 +1,10 @@
 
 var stopped = false;
 var santa = document.getElementById('santa');
+var playarena = document.getElementById('playarena');
 var santaTop = 0;
 var santaLeft = 0;
+var fireStep= 0;
 var stepNr = 0; //for animation 
 var lastPosition ='';
 var hidden = false;//is santa hidden ?
@@ -10,10 +12,12 @@ var santaPosition ='';
 var bars = '';
 var jump = false;
 var obstacle =false;
+var fire_active = false;
 var obstacles = [
     {name: '3 level Bar', enable: false}, 
     {name: '2 level Bar', enable: false}
     ];
+
 function stop(e){
     if(obstacle==false){
         document.body.setAttribute('onkeydown','move(event)');
@@ -43,7 +47,12 @@ function stop(e){
    }else if(e.code == 'ArrowDown'){
         hidden = true;
         startMove('down');
-    } 
+    }else if(e.code=='KeyF'){
+        if(fire_active==false){
+            startMove('fire');
+        }
+    }
+   
 }
 
 function move(e){
@@ -313,6 +322,69 @@ function startMove(nav){
         }
     }
     
-    console.log(santaPosition);
+    if(nav=='fire'){
+        if(hidden != true){
+            fire_active = true;
+            var snowball = document.createElement('div');
+            var sBallPosition =  santaLeft;
+            var shootDirection = lastPosition;
+            snowball.className= 'snowball';
+            
+                if(shootDirection=='right'){
+                    sBallPosition+=35;
+                            
+                }
+            
+            snowball.style.marginTop=`${santaTop+107}px`;
+            function fire(){
+                setTimeout(function(){
+                    if(sBallPosition > -5 && sBallPosition < 740){
+                       fireStep++;
+                        if(shootDirection=='right'){
+                            if(fireStep <= 2){
+                                santa.classList.add('fire_1_r');
+                            }else if(fireStep>2 && fireStep<5){
+                                santa.classList.remove('fire_1_r');  
+                                santa.classList.add('fire_2_r');  
+                            }else{
+                                santa.classList.remove('fire_2_r');  
+                                
+                            }
+                            sBallPosition+=20;// move snowball to right
+                        }else if(shootDirection=='left'){
+                            if(fireStep <= 2){
+                                santa.classList.add('fire_3_l');
+                            }else if(fireStep>2 && fireStep<5){
+                                santa.classList.remove('fire_3_l');  
+                                santa.classList.add('fire_4_l');
+                                     
+                            }else{
+                                santa.classList.remove('fire_4_l');  
+                            }
+                             sBallPosition-=20;// move snowball to left
+                        }
+                       
+                        fire();
+                    }else{
+                        for(var i=0;i<=4;i++){
+                            santa.classList.remove(`fire_${i}_l`);
+                            santa.classList.remove(`fire_${i}_r`);
+                        } 
+                        playarena.removeChild(snowball);
+                        fire_active = false;
+                        fireStep =0;
+                    }
+                    
+                },50);
+                snowball.style.marginLeft=`${sBallPosition}px`;
+                
+            }
+            fire();
+            playarena.appendChild(snowball);
+            stop();
+        }
+        
+    }
+    
 }
 

@@ -21,6 +21,7 @@
     background-image: url(images/santa_sprite.gif);
     background-position: -312px -3px;
     
+    
     display: inline-block;
     width:40px;
     height:52px;
@@ -232,7 +233,6 @@
 }
 
  /* Slide down */
-
 .sl_1::before{
     background-position: -336px -353px; 
     width:34px;
@@ -244,5 +244,24 @@
 .sl_3::before{
     background-position: -291px -351px; 
     width:45px;
+}
+
+
+    /*Shoot*/
+.fire_1_r::before{
+    background-position: -274px -60px; 
+    width:48px;
+}
+.fire_2_r::before{
+    background-position: -321px -60px;  
+    width:45px;
+}
+.fire_1_l::before{
+    background-position: -132px -60px; 
+    width:45px;
+}
+.fire_2_l::before{
+     background-position: -88px -60px; 
+    width:42px;
 }
 /*END SANTA style*/
