@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <title>santa</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styletest.css">
     <link rel="stylesheet" href="animated.css">
 </head>
-<body onkeydown="move(event)" onkeyup="stop(event)">
+<!--onkeydown="move(event)" onkeyup="stop(event)"-->
+<body >
     <div id="arena" >
         <div id="playarena">
            <div class="field">
-               <div class="santa" id="santa"></div>
+               <!--<div class="santa" id="santa"></div>-->
            </div>
            <div class="field"></div>
            <div class="field"></div>
@@ -69,12 +71,24 @@
            <div class="bottom fmiddle"></div>
            <div class="bottom fright"></div>
            <div class="status_bar">
-               Santa: Hi my name is Jeff!!!
-               <br>
+              
+           </div> 
+           <div id='preload' class='load' >
+               <div class="pre_menu">
+                    <label for="name">Your name</label><br> 
+                    <input type="text" id="name">     
+                    <div class="newG-btn" onclick="startGame()">
+                       <span> New &nbsp;Game</span>
+                       <div></div>
+                    </div>
+                </div>
+    
                
-               <br>
-           </div>  
+           </div> 
         </div>
+    </div>
+    <div>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Hic expedita perferendis cum accusantium atque dolorem optio labore, iusto repellendus doloribus assumenda officiis aliquam eum vel ipsa facilis reiciendis dignissimos voluptatum ad deserunt illo impedit quidem eos doloremque magnam. Quasi, sit.
     </div>
     <script src="move.js"></script>
 </body>

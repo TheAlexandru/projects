@@ -20,6 +20,7 @@
     /*border:1px solid red;*/
     background-image: url(images/santa_sprite.gif);
     background-position: -312px -3px;
+   
     
     
     display: inline-block;
@@ -238,7 +239,7 @@
     width:34px;
 }
 .sl_2::before{
-    background-position: -368px -353px; 
+    background-position: -368px -352px; 
     width:32px;
 }
 .sl_3::before{
@@ -256,11 +257,11 @@
     background-position: -321px -60px;  
     width:45px;
 }
-.fire_1_l::before{
+.fire_3_l::before{
     background-position: -132px -60px; 
     width:45px;
 }
-.fire_2_l::before{
+.fire_4_l::before{
      background-position: -88px -60px; 
     width:42px;
 }

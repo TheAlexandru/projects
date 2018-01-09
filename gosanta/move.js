@@ -1,6 +1,7 @@
 
 var stopped = false;
-var santa = document.getElementById('santa');
+var skipped = false;
+var santa = ''
 var playarena = document.getElementById('playarena');
 var santaTop = 0;
 var santaLeft = 0;
@@ -17,12 +18,73 @@ var obstacles = [
     {name: '3 level Bar', enable: false}, 
     {name: '2 level Bar', enable: false}
     ];
+var dialog = document.querySelector('.status_bar');
+
+
+//#### Start new game ####
+
+var temp = document.createElement('div');
+function startGame(){
+    temp.className = 'hide_game';
+    var name = document.getElementById('name').value;
+    playarena.removeChild(document.getElementById('preload'));
+    
+    dialog.innerHTML=`<p class="line-1 anim-typewriter">HOHOHO,Hello dear ${name}!! I need your help! </p><div class="skip" onclick='beginGame()'></div> `;
+   playarena.appendChild(temp);
+   setTimeout(function(){
+       if(skipped==false){
+           dialog.innerHTML=`<p class="line-1 anim-typewriter">Collect all the presents and get them to my house.</p><div class="skip" onclick='beginGame()'></div>`;
+       }
+       
+   },6500);  
+    setTimeout(function(){
+        if(skipped==false){
+           dialog.innerHTML=`<p class="line-1 anim-typewriter">Good luck ${name}!</p><div class="skip" onclick='beginGame()'></div> `; 
+        }
+   },11500);
+    
+    
+        
+    setTimeout(function(){
+        if(skipped==false){
+            beginGame()
+        }
+    },16000);
+    
+}
+
+
+function beginGame(){
+    skipped=true;
+        setTimeout(function(){
+            lastPosition = 'right';
+            document.body.setAttribute('onkeyup','stop(event)');
+            document.body.setAttribute('onkeydown','move(event)');
+            var div = document.createElement('div');
+            div.setAttribute('id','santa');
+            div.className= 'santa';
+            playarena.children[0].appendChild(div);
+            santa = document.getElementById('santa');
+            dialog.innerHTML=``;
+            playarena.removeChild(playarena.lastElementChild);
+            
+        },100);
+    }
+//#### END start new game ####
+
+
+//#### Finish the game ####
+function finish(){
+    skipped=false;
+}
+//#### end finish game ####
+
 
 function stop(e){
     if(obstacle==false){
         document.body.setAttribute('onkeydown','move(event)');
     }
-    document.body.setAttribute('onkeyup','stop(event)')
+    document.body.setAttribute('onkeyup','stop(event)');
     stopped = true;
     jump = false;
     stepNr = 0;
