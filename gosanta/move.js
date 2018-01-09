@@ -18,28 +18,29 @@ var obstacles = [
     {name: '3 level Bar', enable: false}, 
     {name: '2 level Bar', enable: false}
     ];
-var dialog = document.querySelector('.status_bar');
+var dialog = document.getElementById('text_area');
 
 
 //#### Start new game ####
 
 var temp = document.createElement('div');
 function startGame(){
+    dialog.className = 'status_bar';
     temp.className = 'hide_game';
     var name = document.getElementById('name').value;
     playarena.removeChild(document.getElementById('preload'));
     
-    dialog.innerHTML=`<p class="line-1 anim-typewriter">HOHOHO,Hello dear ${name}!! I need your help! </p><div class="skip" onclick='beginGame()'></div> `;
+    dialog.innerHTML=`<div class="santa_dialog"></div><p class="line-1 anim-typewriter">HOHOHO,Hello dear ${name}!! I need your help! </p><div class="skip" onclick='beginGame()'></div> `;
    playarena.appendChild(temp);
    setTimeout(function(){
        if(skipped==false){
-           dialog.innerHTML=`<p class="line-1 anim-typewriter">Collect all the presents and get them to my house.</p><div class="skip" onclick='beginGame()'></div>`;
+           dialog.innerHTML=`<div class="santa_dialog"></div> <p class="line-1 anim-typewriter">Collect all the presents and get them to my house.</p><div class="skip" onclick='beginGame()'></div>`;
        }
        
    },6500);  
     setTimeout(function(){
         if(skipped==false){
-           dialog.innerHTML=`<p class="line-1 anim-typewriter">Good luck ${name}!</p><div class="skip" onclick='beginGame()'></div> `; 
+           dialog.innerHTML=`<div class="santa_dialog"></div><p class="line-1 anim-typewriter">Good luck ${name}!</p><div class="skip" onclick='beginGame()'></div> `; 
         }
    },11500);
     
@@ -67,6 +68,7 @@ function beginGame(){
             santa = document.getElementById('santa');
             dialog.innerHTML=``;
             playarena.removeChild(playarena.lastElementChild);
+            playarena.removeChild(dialog);
             
         },100);
     }
