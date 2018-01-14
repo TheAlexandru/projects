@@ -347,10 +347,17 @@ box-shadow: 1px 1px 1px 0px rgba(190,0,80,1);
     background-image: url(images/Glass_Block_Sheet.png);
     background-size:300px;
     background-position: -248px -76px;
+    
 }
 
-.break_ice_1::before{
-    
+.break_ice_1{
+    background-position:-274px -76px;
+}
+.break_ice_2{
+    background-position:-146px -102px;
+}
+.break_ice_3{
+    background-position:-146px -128px;
 }
 
 .right_block{ margin-left:-30px; }

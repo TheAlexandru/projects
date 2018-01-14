@@ -16,6 +16,9 @@ var obstacle =false;
 var fire_active = false;
 var gift_aduio = new Audio('/sounds/coin.wav');
 var ice_break = new Audio('/sounds/ice_break.wav');
+var ice_broken = new Audio('/sounds/ice_broken.wav');
+var jump_breathing = new Audio('/sounds/breathing-jumping.wav');
+var snow_landing = new Audio('/sounds/snow-land.wav');
 var obstacles = [
     {name: '3 level Bar', enable: false}, 
     {name: '2 level Bar', enable: false},
@@ -60,6 +63,7 @@ function createmap(){
         if(i==0){playarena.children[3].appendChild(gift);}
         if(i==1){playarena.children[20].appendChild(gift); gift.className='gift g_2level';}
         
+    //adding ice-blocks to map
         var ice_block = document.createElement('div');
         ice_block.className='ice-block';
         if(i==0){playarena.children[19].appendChild(ice_block);}
@@ -72,18 +76,15 @@ function createmap(){
     ]; 
     
     ice_blocks = [
-      {ice_nr: playarena.children[19].firstElementChild, enabled:true , found:false, position_1:551, position_2:602},//left block
-      {ice_nr: playarena.children[21].firstElementChild, enabled:true , found:false, position_1:570, position_2:628},//top block
-      {ice_nr: playarena.children[21].firstElementChild, enabled:true , found:false, position_1:593, position_2:644},//right block
+      {ice_nr: playarena.children[19].firstElementChild, enabled:true , found:false, position_1:551, position_2:602, broken: 0},//left block
+      {ice_nr: playarena.children[21].firstElementChild, enabled:true , found:false, position_1:570, position_2:628, broken: 0},//top block
+      {ice_nr: playarena.children[21].firstElementChild, enabled:true , found:false, position_1:593, position_2:644, broken: 0},//right block
      //position_1 is for santa go right
      //position_2 is for santa go left
     ];
 //end gifts && blocks
     
-    
-    
-    
-    
+ 
     giftAnimate();
     var dialog = document.createElement('div');
     dialog.setAttribute('id','text_area');
@@ -225,6 +226,7 @@ function stop(e){
         } 
     } 
    if(e.code == 'ArrowUp'){
+            
         startMove('up');
    }else if(e.code == 'ArrowDown'){
         
@@ -337,7 +339,8 @@ function startMove(nav){
     }
   
 //move santa to Right
-    if(nav == 'right'){    
+    if(nav == 'right'){   
+        console.log('santa TOP',santaTop);
         setTimeout(function(){
                 if(stopped != true){
                    
@@ -394,12 +397,26 @@ function startMove(nav){
         document.body.removeAttribute('onkeydown','move(event)');
         
         if(hidden==false && (obstacles[3].enable||obstacles[4].enable)==false){
+            if(stepNr==0){
+                jump_breathing.loop = false;
+                jump_breathing.play();
+            }else if(stepNr==5){
+                snow_landing.play();
+            };
             jump = true;
             if(lastPosition=='right'){
+                
              setTimeout(function(){
                    santaLeft>=705 ? santaLeft=0 : '';
                    santa.className='santa';
-                 stepNr++
+                    stepNr++
+            //stop jumping if ice
+                 if(ice_blocks[0].enabled==true&&(santaLeft+10)>ice_blocks[0].position_1 && (santaLeft+10)<ice_blocks[0].position_2 && santaPosition=='2 level'){
+                        stepNr=8;
+                        santaTop=143;
+                        santa.style.marginTop = `${santaTop}px`;
+                 }
+            //end stop jumping
                     if(stepNr>0 && stepNr <=2){
                         santa.classList.add(`j_r1`);
                     }else if(stepNr==3){
@@ -418,6 +435,7 @@ function startMove(nav){
                         santa.style.marginTop = `${santaTop}px`;
                     }else if(stepNr==8){
                         santa.classList.add(`j_r4`);
+                        
                     }
                     stepNr!=8 ? startMove(nav) : stop();
                     
@@ -448,6 +466,8 @@ function startMove(nav){
                         santa.style.marginTop = `${santaTop}px`;
                         startMove(nav);
                     }else if(stepNr==8){
+                        
+                        
                         santa.classList.add(`j_l4`);
                          stop();
                     }
@@ -587,22 +607,27 @@ function startMove(nav){
                             }
                             sBallPosition+=10;// move snowball to right
                         
-                        //if ice then stop the ball,esle move one..
-                        
-                        if(santaPosition=='2 level' && sBallPosition > ((ice_blocks[0].position_1||ice_blocks[1].position_1||ice_blocks[2].position_1)+40)){
-                            //break the ice
-                          /*  for(var i=0;i<ice_blocks;i++){
-                                if(sBallPosition >= ice_blocks[i].position_1){
-                                    
-                                   
+        //if ice then stop the ball,esle move one..
+
+                            if(santaPosition=='2 level' && ice_blocks[0].enabled==true && sBallPosition > ice_blocks[0].position_1+40){
+                                if(ice_blocks[0].broken>=0 && ice_blocks[0].broken<5){
+                                  ice_blocks[0].broken++;
                                 }
-                            }*/
-                               breakIce();  
-                                
-                                
-                           }else{
+                                breakIce(0,ice_blocks[0].broken);  
+                            }else if(santaPosition=='2 level' && ice_blocks[1].enabled==true && sBallPosition > ice_blocks[1].position_1+40){
+                                if(ice_blocks[1].broken>=0 && ice_blocks[1].broken<5){
+                                  ice_blocks[1].broken++;
+                                }
+                                breakIce(1,ice_blocks[1].broken);  
+                            }else if(santaPosition=='2 level' && ice_blocks[2].enabled==true && sBallPosition > ice_blocks[2].position_1+40){
+                                if(ice_blocks[2].broken>=0 && ice_blocks[2].broken<5){
+                                  ice_blocks[2].broken++;
+                                }
+                                breakIce(2,ice_blocks[2].broken);  
+                            }else{
                                 fire();
-                           }
+                            }
+                        
                        
                     }else if(shootDirection=='left' && sBallPosition < 740 && sBallPosition > -5){
                             fireStep++;
@@ -631,11 +656,27 @@ function startMove(nav){
                         fire_active = false;
                         fireStep =0;
                     }
-                    function breakIce(){
-                        console.log('stop');
-                        ice_break.play();
-                        stopBall();
-                        //var ice = document.getElementsByClassName('ice-block');
+                    
+                    // change ice style 
+                    function breakIce(bl,nr){
+                        var b_nr = bl;
+                        var block = document.getElementsByClassName('ice-block');
+                        if(nr!=1){
+                            block[b_nr].classList.remove(`break_ice_${nr-1}`);
+                        }
+                        
+                        if(nr>0&& nr<4){
+                            ice_break.play();
+                            block[b_nr].classList.add(`break_ice_${nr}`);
+                            stopBall();
+                        }else if(nr==4){
+                            ice_broken.play();
+                            block[b_nr].className='';
+                            ice_blocks[0].broken=0;
+                            ice_blocks[0].enabled=false;
+                            fire();
+                            
+                        }   
                         
                     }
                     
