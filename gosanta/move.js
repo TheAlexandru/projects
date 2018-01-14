@@ -3,10 +3,12 @@ var stopped = false;
 var skipped = false;
 var santa = ''
 var playarena = document.getElementById('playarena');
-var santaTop = 0;
+var santaTop = santaLeft = fireStep = stepNr =0;
+
+/*var santaTop = 0;
 var santaLeft = 0;
 var fireStep= 0;
-var stepNr = 0; //for animation 
+var stepNr = 0;*/ //for animation 
 var lastPosition ='';
 var hidden = false;//is santa hidden ?
 var santaPosition ='';
@@ -19,6 +21,7 @@ var ice_break = new Audio('/sounds/ice_break.wav');
 var ice_broken = new Audio('/sounds/ice_broken.wav');
 var jump_breathing = new Audio('/sounds/breathing-jumping.wav');
 var snow_landing = new Audio('/sounds/snow-land.wav');
+var slide = new Audio('/sounds/slide2.wav');
 var obstacles = [
     {name: '3 level Bar', enable: false}, 
     {name: '2 level Bar', enable: false},
@@ -32,6 +35,14 @@ var obstacles = [
 var gifts ='';//gifts position and number (is added in createmap func )
 var gifts_nr = 0;
 var ice_blocks = '';//ice blocks position and number (is added in createmap func )
+
+
+
+
+var block ='';
+
+
+
 
 var gift = document.getElementsByClassName('gift');//3 level gifts
 var gift_other = document.getElementsByClassName('gift g_2level');//other levels
@@ -57,7 +68,7 @@ function createmap(){
 //add gifts && ice blocks
     gifts_nr =0;
     document.getElementById('gifts').firstElementChild.children[1].innerHTML = `${gifts_nr}`;
-    for(var i=0;i<3;i++){
+    for(var i=0;i<4;i++){
         var gift = document.createElement('div');
         gift.className='gift';
         if(i==0){playarena.children[3].appendChild(gift);}
@@ -66,9 +77,13 @@ function createmap(){
     //adding ice-blocks to map
         var ice_block = document.createElement('div');
         ice_block.className='ice-block';
+        var border_field = document.createElement('div');
+        border_field.className='field_r_border';
+       
         if(i==0){playarena.children[19].appendChild(ice_block);}
-        if(i==1){playarena.children[21].appendChild(ice_block); ice_block.className='ice-block right_block';}
+        if(i==1){playarena.children[21].appendChild(border_field);}
         if(i==2){playarena.children[21].appendChild(ice_block); ice_block.className='ice-block top_block';}
+        if(i==3){playarena.children[21].appendChild(ice_block); ice_block.className='ice-block right_block';}
     }
     gifts= [
       {gift_nr: playarena.children[3].firstElementChild, enabled:true , found:false, position_1:190, position_2:220},
@@ -82,6 +97,12 @@ function createmap(){
      //position_1 is for santa go right
      //position_2 is for santa go left
     ];
+     block= [
+    playarena.children[19].children[0],
+    playarena.children[21].children[1],
+    playarena.children[21].children[2],
+
+            ];
 //end gifts && blocks
     
  
@@ -183,8 +204,12 @@ function beginGame(){
 
 //#### Finish the game ####
 function finish(){
-    
-    playarena.children[0].innerHTML='';  
+    for(var i = 0; i < playarena.children.length;i++){
+        if(i==0||i==3||i==19||i==20||i==21){
+            playarena.children[i].innerHTML='';  
+        }
+    }
+ 
     document.body.removeAttribute('onkeydown','move(event)');
     document.body.removeAttribute('onkeyup','stop(event)');
     stopped = true;
@@ -262,6 +287,10 @@ function move(e){
 
 
 function startMove(nav){
+                            console.log(block[0]);
+                            console.log(block[1]);
+                            console.log(block[2]);
+    
     console.log(santaLeft);
     
     //find on which level is santa
@@ -344,7 +373,7 @@ function startMove(nav){
         setTimeout(function(){
                 if(stopped != true){
                    
-                    if(obstacles[0].enable==true || obstacles[1].enable==true || obstacles[3].enable==true ){
+                    if((obstacles[0].enable||obstacles[1].enable||obstacles[3].enable||obstacles[4].enable||obstacles[5].enable)==true ){
                         obstacle=true;
                         stop();  
                     }else if(obstacles[2].enable==true ){
@@ -507,7 +536,7 @@ function startMove(nav){
     //hide or go down:
     if(nav == 'down'){
         //if ice block then don't jump!
-        if(obstacles[3].enable==false){
+        if(obstacles[3].enable==false && obstacles[4].enable==false && obstacles[5].enable==false){
             //if bar, go down
             hidden = true;
             if(obstacles[0].enable== true || obstacles[1].enable== true){
@@ -516,7 +545,7 @@ function startMove(nav){
                 document.body.removeAttribute('onkeydown','move(event)');
                 setTimeout(function(){
                     stepNr > 17 ? stepNr =1 : stepNr++;
-
+                    if(stepNr==2){slide.play();}
                     if(stepNr>=1 && stepNr<4){
                        santaTop+=1;
                        santa.classList.add(`sl_1`);
@@ -586,13 +615,14 @@ function startMove(nav){
             
                 if(shootDirection=='right'){
                     sBallPosition+=35;
-                            
                 }
             
             snowball.style.marginTop=`${santaTop+107}px`;
             function fire(){
+               
                 setTimeout(function(){
                     if(shootDirection=='right' && sBallPosition > -5 && sBallPosition < 740) {
+                        
                        
                         fireStep++;
                         if(fireStep <= 2){
@@ -609,21 +639,23 @@ function startMove(nav){
                         
         //if ice then stop the ball,esle move one..
 
-                            if(santaPosition=='2 level' && ice_blocks[0].enabled==true && sBallPosition > ice_blocks[0].position_1+40){
+                            if(santaPosition=='2 level' && ice_blocks[0].enabled==true && sBallPosition > ice_blocks[0].position_1+40&&sBallPosition<ice_blocks[0].position_2){
                                 if(ice_blocks[0].broken>=0 && ice_blocks[0].broken<5){
                                   ice_blocks[0].broken++;
                                 }
                                 breakIce(0,ice_blocks[0].broken);  
-                            }else if(santaPosition=='2 level' && ice_blocks[1].enabled==true && sBallPosition > ice_blocks[1].position_1+40){
+                            }else if(santaPosition=='2 level' && ice_blocks[1].enabled==true && sBallPosition > ice_blocks[1].position_1+40&&sBallPosition<ice_blocks[1].position_2){
                                 if(ice_blocks[1].broken>=0 && ice_blocks[1].broken<5){
                                   ice_blocks[1].broken++;
                                 }
                                 breakIce(1,ice_blocks[1].broken);  
-                            }else if(santaPosition=='2 level' && ice_blocks[2].enabled==true && sBallPosition > ice_blocks[2].position_1+40){
+                            }else if(santaPosition=='2 level' && ice_blocks[2].enabled==true && sBallPosition > ice_blocks[2].position_1+40&&sBallPosition<ice_blocks[2].position_2){
                                 if(ice_blocks[2].broken>=0 && ice_blocks[2].broken<5){
                                   ice_blocks[2].broken++;
                                 }
                                 breakIce(2,ice_blocks[2].broken);  
+                                
+                                
                             }else{
                                 fire();
                             }
@@ -642,10 +674,32 @@ function startMove(nav){
                                 santa.classList.remove('fire_4_l');  
                             }
                              sBallPosition-=10;// move snowball to left
-                            fire();
+                    //if ice then stop the ball,esle move one..
+
+                         if(santaPosition=='2 level' && ice_blocks[0].enabled==true && sBallPosition > ice_blocks[0].position_1+40&&sBallPosition<ice_blocks[0].position_2){
+                                if(ice_blocks[0].broken>=0 && ice_blocks[0].broken<5){
+                                  ice_blocks[0].broken++;
+                                }
+                                breakIce(0,ice_blocks[0].broken);  
+                            }else if(santaPosition=='2 level' && ice_blocks[1].enabled==true && sBallPosition > ice_blocks[1].position_1+40&&sBallPosition<ice_blocks[1].position_2){
+                                if(ice_blocks[1].broken>=0 && ice_blocks[1].broken<5){
+                                  ice_blocks[1].broken++;
+                                }
+                                breakIce(1,ice_blocks[1].broken);  
+                            }else if(santaPosition=='2 level' && ice_blocks[2].enabled==true && sBallPosition > ice_blocks[2].position_1+40&&sBallPosition<ice_blocks[2].position_2){
+                                if(ice_blocks[2].broken>=0 && ice_blocks[2].broken<5){
+                                  ice_blocks[2].broken++;
+                                }
+                                breakIce(2,ice_blocks[2].broken);  
+                                
+                                
+                            }else{
+                                fire();
+                            }
+                        
+                        
                         }else{
                             stopBall();
-                        
                         }
                     function stopBall(){
                         for(var i=0;i<=4;i++){
@@ -660,22 +714,33 @@ function startMove(nav){
                     // change ice style 
                     function breakIce(bl,nr){
                         var b_nr = bl;
-                        var block = document.getElementsByClassName('ice-block');
+                        
                         if(nr!=1){
-                            block[b_nr].classList.remove(`break_ice_${nr-1}`);
+                            block[b_nr].classList.remove(`break_ice_${nr-1}`);  
+                          /*  if(ice_blocks[0].enabled==false && ice_blocks[1].enabled == false && ice_blocks[2].enabled==false){
+                                  
+                            }*/
                         }
                         
                         if(nr>0&& nr<4){
+                            
                             ice_break.play();
                             block[b_nr].classList.add(`break_ice_${nr}`);
                             stopBall();
                         }else if(nr==4){
                             ice_broken.play();
-                            block[b_nr].className='';
-                            ice_blocks[0].broken=0;
-                            ice_blocks[0].enabled=false;
-                            fire();
+                            if(b_nr==0){
+                                playarena.children[19].removeChild(playarena.children[19].firstElementChild); 
+                            }else if(b_nr==1){
+                                playarena.children[21].removeChild(block[b_nr]); 
+                            }else if(b_nr==2){
+                                playarena.children[21].removeChild(block[b_nr]); 
+                            }
+                            ice_blocks[b_nr].broken=0;
+                            ice_blocks[b_nr].enabled=false;
                             
+                            
+                            fire();
                         }   
                         
                     }
