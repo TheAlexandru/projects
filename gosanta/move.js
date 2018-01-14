@@ -14,21 +14,127 @@ var bars = '';
 var jump = false;
 var obstacle =false;
 var fire_active = false;
+var gift_aduio = new Audio('/sounds/coin.wav');
+var ice_break = new Audio('/sounds/ice_break.wav');
 var obstacles = [
     {name: '3 level Bar', enable: false}, 
-    {name: '2 level Bar', enable: false}
+    {name: '2 level Bar', enable: false},
+    {name: 'House', enable: false},
+    {name: 'iceb_l', enable: false},
+    {name: 'iceb_t', enable: false},
+    {name: 'iceb_r', enable: false},
+    
     ];
-var dialog = document.getElementById('text_area');
+
+var gifts ='';//gifts position and number (is added in createmap func )
+var gifts_nr = 0;
+var ice_blocks = '';//ice blocks position and number (is added in createmap func )
+
+var gift = document.getElementsByClassName('gift');//3 level gifts
+var gift_other = document.getElementsByClassName('gift g_2level');//other levels
+//animated gift
+function giftAnimate(){
+
+    setTimeout(function(){
+        if(gifts[0].enabled==true){ gift[0].classList.add('gift_second') };
+       
+        if(gifts[1].enabled==true){ gift_other[0].classList.add('gift_other_second')};
+        /*gift[0].className= 'gift_second';*/  
+    },500) 
+    setTimeout(function(){
+       
+       if(gifts[1].enabled==true){ gift_other[0].className='gift g_2level'};
+       if(gifts[0].enabled==true){gift[0].className='gift'};
+        giftAnimate();
+    },1500)
+}
+
+window.onload=createmap(); //create and show Game menu when page is loaded
+function createmap(){
+//add gifts && ice blocks
+    gifts_nr =0;
+    document.getElementById('gifts').firstElementChild.children[1].innerHTML = `${gifts_nr}`;
+    for(var i=0;i<3;i++){
+        var gift = document.createElement('div');
+        gift.className='gift';
+        if(i==0){playarena.children[3].appendChild(gift);}
+        if(i==1){playarena.children[20].appendChild(gift); gift.className='gift g_2level';}
+        
+        var ice_block = document.createElement('div');
+        ice_block.className='ice-block';
+        if(i==0){playarena.children[19].appendChild(ice_block);}
+        if(i==1){playarena.children[21].appendChild(ice_block); ice_block.className='ice-block right_block';}
+        if(i==2){playarena.children[21].appendChild(ice_block); ice_block.className='ice-block top_block';}
+    }
+    gifts= [
+      {gift_nr: playarena.children[3].firstElementChild, enabled:true , found:false, position_1:190, position_2:220},
+      {gift_nr: playarena.children[20].firstElementChild, enabled:true , found:false, position_1:583, position_2:618},
+    ]; 
+    
+    ice_blocks = [
+      {ice_nr: playarena.children[19].firstElementChild, enabled:true , found:false, position_1:551, position_2:602},//left block
+      {ice_nr: playarena.children[21].firstElementChild, enabled:true , found:false, position_1:570, position_2:628},//top block
+      {ice_nr: playarena.children[21].firstElementChild, enabled:true , found:false, position_1:593, position_2:644},//right block
+     //position_1 is for santa go right
+     //position_2 is for santa go left
+    ];
+//end gifts && blocks
+    
+    
+    
+    
+    
+    giftAnimate();
+    var dialog = document.createElement('div');
+    dialog.setAttribute('id','text_area');
+    playarena.appendChild(dialog);
+    
+    var preload = document.createElement('div');
+    preload.setAttribute('id','preload');
+    preload.className = 'load';
+    
+    var pre_menu = document.createElement('div');
+    pre_menu.className = 'pre_menu';
+    
+    var label = document.createElement('label');
+    label.innerHTML='Your name:';
+    var input = document.createElement('input');
+    input.setAttribute('type','text');
+    input.setAttribute('id','name');
+    
+    var btn = document.createElement('div');
+    btn.className = 'newG-btn';
+    btn.setAttribute('onclick','startGame()');
+    
+    var span = document.createElement('span');
+    span.innerHTML='New Game';
+    
+    var img = document.createElement('div');
+    
+    btn.appendChild(span);
+    btn.appendChild(img);
+    
+    pre_menu.appendChild(label);
+    pre_menu.appendChild(input);
+    pre_menu.appendChild(btn);
+    
+    preload.appendChild(pre_menu);
+    
+    playarena.appendChild(preload);
+}
+
 
 
 //#### Start new game ####
 
 var temp = document.createElement('div');
 function startGame(){
+    var dialog = document.getElementById('text_area');
     dialog.className = 'status_bar';
     temp.className = 'hide_game';
     var name = document.getElementById('name').value;
-    playarena.removeChild(document.getElementById('preload'));
+    /*playarena.removeChild(document.getElementById('preload'));*/
+    playarena.removeChild(playarena.lastElementChild);
     
     dialog.innerHTML=`<div class="santa_dialog"></div><p class="line-1 anim-typewriter">HOHOHO,Hello dear ${name}!! I need your help! </p><div class="skip" onclick='beginGame()'></div> `;
    playarena.appendChild(temp);
@@ -53,9 +159,8 @@ function startGame(){
     },16000);
     
 }
-
-
 function beginGame(){
+    var dialog = document.getElementById('text_area');
     skipped=true;
         setTimeout(function(){
             lastPosition = 'right';
@@ -77,15 +182,28 @@ function beginGame(){
 
 //#### Finish the game ####
 function finish(){
+    
+    playarena.children[0].innerHTML='';  
+    document.body.removeAttribute('onkeydown','move(event)');
+    document.body.removeAttribute('onkeyup','stop(event)');
+    stopped = true;
+    jump = false;
+    stepNr = 0;
+    obstacle=false;
     skipped=false;
+    createmap();
 }
 //#### end finish game ####
 
 
 function stop(e){
+    
+   
     if(obstacle==false){
         document.body.setAttribute('onkeydown','move(event)');
     }
+      
+    
     document.body.setAttribute('onkeyup','stop(event)');
     stopped = true;
     jump = false;
@@ -109,7 +227,7 @@ function stop(e){
    if(e.code == 'ArrowUp'){
         startMove('up');
    }else if(e.code == 'ArrowDown'){
-        hidden = true;
+        
         startMove('down');
     }else if(e.code=='KeyF'){
         if(fire_active==false){
@@ -153,35 +271,81 @@ function startMove(nav){
         santaPosition = "1 level";
     }
     
-    //find obstacles
+    
+//find all gifts:
+     for(var i = 0; i< gifts.length ; i++){
+        
+        if(santaLeft>gifts[i].position_1 && santaLeft<gifts[i].position_2  && gifts[i].enabled == true && jump == false){
+            if((i==0 &&  santaPosition=='3 level') || (i==1 &&  santaPosition=='2 level') )  {
+                     gifts_nr++;
+                    document.getElementById('gifts').firstElementChild.children[1].innerHTML = `${gifts_nr}`;
+                        gifts[i].found = true;
+            }
+       
+        }
+         if(gifts[i].found==true){
+            gift_aduio.play();
+            if(i==0){
+                 playarena.children[3].removeChild(gifts[i].gift_nr);
+            }else if(i==1){
+                 playarena.children[20].removeChild(gifts[i].gift_nr);
+                
+            }
+           
+            gifts[i].enabled=false;
+            gifts[i].found=false;
+         }
+        
+    }
+    
+//find obstacles
     if(nav=='right'){
         if(santaLeft>295 && santaLeft<330 && santaPosition=='3 level'){
             obstacles[0].enable = true;
         }else if(santaLeft>168 && santaLeft<180 && santaPosition=='2 level'){
             obstacles[1].enable = true;
+        }else if(santaLeft>530 && santaPosition =='1 level'){
+            
+            obstacles[2].enable = true;
+        }else if(santaLeft>ice_blocks[0].position_1 && santaLeft< (ice_blocks[0].position_1+10) && ice_blocks[0].enabled==true && santaPosition=='2 level'){
+            obstacles[3].enable = true;
+            
+        }else if(santaLeft>ice_blocks[1].position_1 && santaLeft< (ice_blocks[1].position_1+10) && ice_blocks[1].enabled==true && santaPosition=='2 level'){
+            obstacles[4].enable = true;
+            
+        }else if(santaLeft>ice_blocks[2].position_1 && santaLeft< (ice_blocks[2].position_1+10) && ice_blocks[2].enabled==true && santaPosition=='2 level'){
+            obstacles[5].enable = true;
+            
         }else{
-            obstacles[0].enable = false;
-            obstacles[1].enable = false;
+            for(var i=0; i<obstacles.length; i++){obstacles[i].enable = false;}
         }
     }else if(nav=='left'){
         if(santaLeft>360 && santaLeft<390 && santaPosition=='3 level'){
             obstacles[0].enable = true;
         }else if(santaLeft>235 && santaLeft<250 && santaPosition=='2 level'){
             obstacles[1].enable = true;
+        }else if(santaLeft>ice_blocks[0].position_2 && santaLeft< (ice_blocks[0].position_2+10) && ice_blocks[0].enabled==true && santaPosition=='2 level'){
+            obstacles[3].enable = true;
+        }else if(santaLeft>ice_blocks[1].position_2 && santaLeft< (ice_blocks[1].position_2+10) && ice_blocks[1].enabled==true && santaPosition=='2 level'){
+            obstacles[4].enable = true;  
+        }else if(santaLeft>ice_blocks[2].position_2 && santaLeft< (ice_blocks[2].position_2+10) && ice_blocks[2].enabled==true && santaPosition=='2 level'){
+            obstacles[4].enable = true;  
         }else{
-            obstacles[0].enable = false;
-            obstacles[1].enable = false;
+             for(var i=0; i<obstacles.length; i++){ obstacles[i].enable = false;}
+            
         }
     }
-    
-    
-    //move santa to Right
+  
+//move santa to Right
     if(nav == 'right'){    
         setTimeout(function(){
                 if(stopped != true){
-                    if(obstacles[0].enable==true || obstacles[1].enable==true){
+                   
+                    if(obstacles[0].enable==true || obstacles[1].enable==true || obstacles[3].enable==true ){
                         obstacle=true;
                         stop();  
+                    }else if(obstacles[2].enable==true ){
+                        finish();      
                     }
                     santaLeft>=710 ? santaLeft=-25 : santaLeft +=5;
                     santa.classList.remove(`r_${stepNr}`);
@@ -199,7 +363,7 @@ function startMove(nav){
     if(nav == 'left'){
         setTimeout(function(){
             if(stopped != true){
-                if(obstacles[0].enable==true|| obstacles[1].enable==true){
+                if((obstacles[0].enable || obstacles[1].enable|| obstacles[3].enable || obstacles[4].enable)==true){
                         obstacle=true;
                         stop();  
                     }
@@ -229,7 +393,7 @@ function startMove(nav){
         document.body.removeAttribute('onkeyup','stop(event)');
         document.body.removeAttribute('onkeydown','move(event)');
         
-        if(hidden==false){
+        if(hidden==false && (obstacles[3].enable||obstacles[4].enable)==false){
             jump = true;
             if(lastPosition=='right'){
              setTimeout(function(){
@@ -289,6 +453,11 @@ function startMove(nav){
                     }
                    },80);
             }
+        }else if((obstacles[3].enable||obstacles[4].enable)==true){
+            document.body.removeAttribute('onkeyup','stop(event)');
+            document.body.removeAttribute('onkeydown','move(event)');
+            stop();
+            
         }else{ // exit from hide:
             setTimeout(function(){
                         if(stepNr<1){stepNr=5};
@@ -317,72 +486,73 @@ function startMove(nav){
     
     //hide or go down:
     if(nav == 'down'){
-        //if bar, go down
-        if(obstacles[0].enable== true || obstacles[1].enable== true){
-            hidden=false;
-            document.body.removeAttribute('onkeyup','stop(event)');
-            document.body.removeAttribute('onkeydown','move(event)');
-            setTimeout(function(){
-                stepNr > 17 ? stepNr =1 : stepNr++;
-                
-                if(stepNr>=1 && stepNr<4){
-                   santaTop+=1;
-                   santa.classList.add(`sl_1`);
-                }else if(stepNr>=3 && stepNr <=12){
-                    santaTop +=10;
-                    santa.classList.add(`sl_2`);
-                }else if(stepNr>12){
-                    santaTop +=10;
-                    santa.classList.add(`sl_3`);  
-                }
-                
-                
-                
-                if(obstacles[0].enable== true ){
-                    santa.style.marginLeft = '338px';
-                    if(santaTop>145){
-                        obstacles[0].enable = false;
-                        stop();
-                    }else{
-                        startMove(nav);
-                    };
-                    
-                }else if(obstacles[1].enable== true){
-                    santa.style.marginLeft = '205px';
-                    if(santaTop>287){
-                        obstacles[1].enable = false;
-                        stop();
-                    }else{
-                        startMove(nav);
-                    };
-                }
-                
-                
-                /*else if(obstacles[1].enable== true){
-                    
-                    
-                }*/
-                
-                santa.style.marginTop = `${santaTop}px`;
-        
-            },80);
-        }else{ // hide
-            document.body.removeAttribute('onkeyup','stop(event)');
-            setTimeout(function(){
-                if(lastPosition=='right'){
-                     santa.classList.remove(`h_r${stepNr}`);
-                     stepNr > 4 ? stepNr=1 : stepNr++;
-                     santa.classList.add(`h_r${stepNr}`);
-                }else if(lastPosition=='left'){
-                    santa.classList.remove(`h_l${stepNr}`);
-                    stepNr > 4 ? stepNr=1 : stepNr++;
-                    santa.classList.add(`h_l${stepNr}`);
-                }else{
-                    santa.classList.add(`h_r${stepNr}`);
-                }
+        //if ice block then don't jump!
+        if(obstacles[3].enable==false){
+            //if bar, go down
+            hidden = true;
+            if(obstacles[0].enable== true || obstacles[1].enable== true){
+                hidden=false;
+                document.body.removeAttribute('onkeyup','stop(event)');
+                document.body.removeAttribute('onkeydown','move(event)');
+                setTimeout(function(){
+                    stepNr > 17 ? stepNr =1 : stepNr++;
 
-                stepNr!=5 ? startMove(nav) : stop();
-            },80);
+                    if(stepNr>=1 && stepNr<4){
+                       santaTop+=1;
+                       santa.classList.add(`sl_1`);
+                    }else if(stepNr>=3 && stepNr <=12){
+                        santaTop +=10;
+                        santa.classList.add(`sl_2`);
+                    }else if(stepNr>12){
+                        santaTop +=10;
+                        santa.classList.add(`sl_3`);  
+                    }
+
+
+
+                    if(obstacles[0].enable== true ){
+                        santa.style.marginLeft = '338px';
+                        if(santaTop>145){
+                            obstacles[0].enable = false;
+                            stop();
+                        }else{
+                            startMove(nav);
+                        };
+
+                    }else if(obstacles[1].enable== true){
+                        santa.style.marginLeft = '205px';
+                        if(santaTop>287){
+                            obstacles[1].enable = false;
+                            stop();
+                        }else{
+                            startMove(nav);
+                        };
+                    }
+
+                    santa.style.marginTop = `${santaTop}px`;
+
+                },80);
+            }else{ // hide
+                document.body.removeAttribute('onkeyup','stop(event)');
+                setTimeout(function(){
+                    if(lastPosition=='right'){
+                         santa.classList.remove(`h_r${stepNr}`);
+                         stepNr > 4 ? stepNr=1 : stepNr++;
+                         santa.classList.add(`h_r${stepNr}`);
+                    }else if(lastPosition=='left'){
+                        santa.classList.remove(`h_l${stepNr}`);
+                        stepNr > 4 ? stepNr=1 : stepNr++;
+                        santa.classList.add(`h_l${stepNr}`);
+                    }else{
+                        santa.classList.add(`h_r${stepNr}`);
+                    }
+
+                    stepNr!=5 ? startMove(nav) : stop();
+                },80);
+            }
+            
+        }else{
+            console.log("I can't hide here!");
         }
     }
     
@@ -402,10 +572,11 @@ function startMove(nav){
             snowball.style.marginTop=`${santaTop+107}px`;
             function fire(){
                 setTimeout(function(){
-                    if(sBallPosition > -5 && sBallPosition < 740){
-                       fireStep++;
-                        if(shootDirection=='right'){
-                            if(fireStep <= 2){
+                    if(shootDirection=='right' && sBallPosition > -5 && sBallPosition < 740) {
+                       
+                        fireStep++;
+                        if(fireStep <= 2){
+                            
                                 santa.classList.add('fire_1_r');
                             }else if(fireStep>2 && fireStep<5){
                                 santa.classList.remove('fire_1_r');  
@@ -414,9 +585,29 @@ function startMove(nav){
                                 santa.classList.remove('fire_2_r');  
                                 
                             }
-                            sBallPosition+=20;// move snowball to right
-                        }else if(shootDirection=='left'){
+                            sBallPosition+=10;// move snowball to right
+                        
+                        //if ice then stop the ball,esle move one..
+                        
+                        if(santaPosition=='2 level' && sBallPosition > ((ice_blocks[0].position_1||ice_blocks[1].position_1||ice_blocks[2].position_1)+40)){
+                            //break the ice
+                          /*  for(var i=0;i<ice_blocks;i++){
+                                if(sBallPosition >= ice_blocks[i].position_1){
+                                    
+                                   
+                                }
+                            }*/
+                               breakIce();  
+                                
+                                
+                           }else{
+                                fire();
+                           }
+                       
+                    }else if(shootDirection=='left' && sBallPosition < 740 && sBallPosition > -5){
+                            fireStep++;
                             if(fireStep <= 2){
+                                
                                 santa.classList.add('fire_3_l');
                             }else if(fireStep>2 && fireStep<5){
                                 santa.classList.remove('fire_3_l');  
@@ -425,11 +616,13 @@ function startMove(nav){
                             }else{
                                 santa.classList.remove('fire_4_l');  
                             }
-                             sBallPosition-=20;// move snowball to left
+                             sBallPosition-=10;// move snowball to left
+                            fire();
+                        }else{
+                            stopBall();
+                        
                         }
-                       
-                        fire();
-                    }else{
+                    function stopBall(){
                         for(var i=0;i<=4;i++){
                             santa.classList.remove(`fire_${i}_l`);
                             santa.classList.remove(`fire_${i}_r`);
@@ -438,8 +631,15 @@ function startMove(nav){
                         fire_active = false;
                         fireStep =0;
                     }
+                    function breakIce(){
+                        console.log('stop');
+                        ice_break.play();
+                        stopBall();
+                        //var ice = document.getElementsByClassName('ice-block');
+                        
+                    }
                     
-                },50);
+                },20);
                 snowball.style.marginLeft=`${sBallPosition}px`;
                 
             }
