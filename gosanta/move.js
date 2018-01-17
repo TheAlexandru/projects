@@ -4,11 +4,6 @@ var skipped = false;
 var santa = ''
 var playarena = document.getElementById('playarena');
 var santaTop = santaLeft = fireStep = stepNr =0;
-
-/*var santaTop = 0;
-var santaLeft = 0;
-var fireStep= 0;
-var stepNr = 0;*/ //for animation 
 var lastPosition ='';
 var hidden = false;//is santa hidden ?
 var santaPosition ='';
@@ -29,42 +24,51 @@ var obstacles = [
     {name: 'iceb_l', enable: false},
     {name: 'iceb_t', enable: false},
     {name: 'iceb_r', enable: false},
-    
+    {name: 'tree1', enable: true,position_1:-25,position_2:60},
+    {name: 'snowman', enable: true,position_1:179,position_2:100},
     ];
+var win = lose = false;
+var santalife = 100;
 
 var gifts ='';//gifts position and number (is added in createmap func )
 var gifts_nr = 0;
 var ice_blocks = '';//ice blocks position and number (is added in createmap func )
 
-
-
-
 var block ='';
 
-
-
-
-var gift = document.getElementsByClassName('gift');//3 level gifts
-var gift_other = document.getElementsByClassName('gift g_2level');//other levels
-//animated gift
+//#### animated gift
+var gift = document.getElementsByClassName('gift');
 function giftAnimate(){
-
     setTimeout(function(){
-        if(gifts[0].enabled==true){ gift[0].classList.add('gift_second') };
-       
-        if(gifts[1].enabled==true){ gift_other[0].classList.add('gift_other_second')};
-        /*gift[0].className= 'gift_second';*/  
+        for(var i= 0; i<gift.length;i++){
+            if(gift[i].className.indexOf("g_2level")==5){//gifts from 2level
+                gift[i].classList.add('gift_other_second');
+            }else{
+                gift[i].classList.add('gift_second');
+            }
+        } 
     },500) 
     setTimeout(function(){
-       
-       if(gifts[1].enabled==true){ gift_other[0].className='gift g_2level'};
-       if(gifts[0].enabled==true){gift[0].className='gift'};
+       for(var i= 0; i<gift.length;i++){
+           if(gifts[0].enabled==true||gifts[1].enabled==true||gifts[2].enabled==true){
+            if(gift[i].className=='gift g_2level gift_other_second'){
+                gift[i].className= 'gift g_2level';
+            }else{
+                  gift[i].className='gift';
+               }
+           }
+        }
         giftAnimate();
     },1500)
 }
+//END ANIMATED GIFT #####
 
-window.onload=createmap(); //create and show Game menu when page is loaded
+//######## NEW MAP #########
 function createmap(){
+    //create new snowman
+    newSnowMan();
+    snmAnimate()
+    snowman_life = 100;
 //add gifts && ice blocks
     gifts_nr =0;
     document.getElementById('gifts').firstElementChild.children[1].innerHTML = `${gifts_nr}`;
@@ -72,8 +76,9 @@ function createmap(){
         var gift = document.createElement('div');
         gift.className='gift';
         if(i==0){playarena.children[3].appendChild(gift);}
-        if(i==1){playarena.children[20].appendChild(gift); gift.className='gift g_2level';}
-        
+        if(i==1){playarena.children[12].appendChild(gift);}
+        if(i==2){playarena.children[20].appendChild(gift);}
+        if(i==1||i==2){gift.className='gift g_2level';}//set diferent class for level 2
     //adding ice-blocks to map
         var ice_block = document.createElement('div');
         ice_block.className='ice-block';
@@ -88,6 +93,7 @@ function createmap(){
     gifts= [
       {gift_nr: playarena.children[3].firstElementChild, enabled:true , found:false, position_1:190, position_2:220},
       {gift_nr: playarena.children[20].firstElementChild, enabled:true , found:false, position_1:583, position_2:618},
+      {gift_nr: playarena.children[12].firstElementChild, enabled:true , found:false, position_1:49, position_2:99},
     ]; 
     
     ice_blocks = [
@@ -144,10 +150,59 @@ function createmap(){
     
     playarena.appendChild(preload);
 }
+//######## end map #########
+
+//######## SnowMan ############
+    //generate new snowman
+var snowman = '';
+function newSnowMan(){
+    var div=document.createElement('div');
+    div.className='snowman';
+    div.id='snowman';
+    playarena.children[13].appendChild(div);
+    snowman = document.getElementById('snowman');
+}
+
+    //animate snowman
+    var snmfireNr =0;
+function snmFire(){
+    if(santaPosition=='2 level'){
+        setTimeout(function(){
+            snmfireNr>0&& snmfireNr<=6 ? snowman.classList.remove(`snowman_f${snmfireNr}`):'';
+            snmfireNr++;
+            snmfireNr<=6 ? snowman.classList.add(`snowman_f${snmfireNr}`):'';
+            snmfireNr>6 && snmfireNr<15 ? snowman.className= 'snowman' : '';
+            snmfireNr>=15 ? snmfireNr=0:'';
+            snmFire();
+            
+        },110);
+    }else{
+        snowman.className='snowman';
+        snmfireNr =0;
+        snmAnimate();
+    }
+}
+function snmAnimate(){
+    if(santaPosition!='2 level'){
+        setTimeout(function(){
+            snowman.classList.add('snowman_2');
+
+        },1000);
+        setTimeout(function(){
+            snowman.classList.remove('snowman_2');
+            snmAnimate();
+        },2100);
+    }else{
+        snmFire();
+        /*setTimeout(snmAnimate,500);*/
+    }
+}
+
+//######## END SnowMan ########
 
 
 
-//#### Start new game ####
+//#### Start NEW GAME ####
 
 var temp = document.createElement('div');
 function startGame(){
@@ -204,12 +259,12 @@ function beginGame(){
 
 //#### Finish the game ####
 function finish(){
-    for(var i = 0; i < playarena.children.length;i++){
-        if(i==0||i==3||i==19||i==20||i==21){
+   /* for(var i = 0; i < playarena.children.length;i++){
+        if(i==0||i==3||i==12||i==13||i==19||i==20||i==21){
             playarena.children[i].innerHTML='';  
         }
-    }
- 
+    }*/
+    
     document.body.removeAttribute('onkeydown','move(event)');
     document.body.removeAttribute('onkeyup','stop(event)');
     stopped = true;
@@ -217,9 +272,35 @@ function finish(){
     stepNr = 0;
     obstacle=false;
     skipped=false;
-    createmap();
+    
+    var div = document.createElement('div');
+    div.className='load';
+    var btn = document.createElement('div');
+    btn.className = 'newG-btn';
+    
+    if(lose==true){
+        btn.setAttribute('onclick','restartGame()');
+        btn.innerHTML='Game Over!';
+        div.appendChild(btn);
+        playarena.appendChild(div);
+        console.log('gameover');
+    }
+    if(win==true){
+        playarena.appendChild(div);
+        
+        console.log('win');
+    }
+    if(gifts_nr<3){
+       console.log(gifts_nr,'collect all gifts!');
+       }
+    //location.reload();
 }
 //#### end finish game ####
+
+//#### restart Game #####
+function restartGame(){
+    location.reload();
+}
 
 
 function stop(e){
@@ -285,11 +366,8 @@ function move(e){
 }
 
 
-
+//##### All move conditions up/down/left/right/fire/hide/slide ######
 function startMove(nav){
-                            console.log(block[0]);
-                            console.log(block[1]);
-                            console.log(block[2]);
     
     console.log(santaLeft);
     
@@ -307,9 +385,8 @@ function startMove(nav){
      for(var i = 0; i< gifts.length ; i++){
         
         if(santaLeft>gifts[i].position_1 && santaLeft<gifts[i].position_2  && gifts[i].enabled == true && jump == false){
-            if((i==0 &&  santaPosition=='3 level') || (i==1 &&  santaPosition=='2 level') )  {
-                     gifts_nr++;
-                    document.getElementById('gifts').firstElementChild.children[1].innerHTML = `${gifts_nr}`;
+            if((i==0 &&  santaPosition=='3 level') || ((i==1||i==2) &&  santaPosition=='2 level') )  {
+                     gifts_nr++; document.getElementById('gifts').firstElementChild.children[1].innerHTML = `${gifts_nr}`;
                         gifts[i].found = true;
             }
        
@@ -320,6 +397,9 @@ function startMove(nav){
                  playarena.children[3].removeChild(gifts[i].gift_nr);
             }else if(i==1){
                  playarena.children[20].removeChild(gifts[i].gift_nr);
+                
+            }else if(i==2){
+                 playarena.children[12].removeChild(gifts[i].gift_nr);
                 
             }
            
@@ -372,11 +452,11 @@ function startMove(nav){
         console.log('santa TOP',santaTop);
         setTimeout(function(){
                 if(stopped != true){
-                   
-                    if((obstacles[0].enable||obstacles[1].enable||obstacles[3].enable||obstacles[4].enable||obstacles[5].enable)==true ){
+                    if((obstacles[0].enable||obstacles[1].enable||obstacles[3].enable||obstacles[4].enable||obstacles[5].enable)==true || (santaLeft < obstacles[6].position_2 &&santaPosition=='2 level')){
                         obstacle=true;
                         stop();  
                     }else if(obstacles[2].enable==true ){
+                        lose=true;
                         finish();      
                     }
                     santaLeft>=710 ? santaLeft=-25 : santaLeft +=5;
@@ -387,7 +467,7 @@ function startMove(nav){
                     
                     startMove(nav);
                 }
-        },80);
+        },60);
     }
     //### END moveRight ###//
     
@@ -395,7 +475,7 @@ function startMove(nav){
     if(nav == 'left'){
         setTimeout(function(){
             if(stopped != true){
-                if((obstacles[0].enable || obstacles[1].enable|| obstacles[3].enable || obstacles[4].enable)==true){
+                if((obstacles[0].enable || obstacles[1].enable|| obstacles[3].enable || obstacles[4].enable)==true|| (santaLeft > obstacles[6].position_1 &&  santaLeft < obstacles[6].position_2+10 &&santaPosition=='2 level')){
                         obstacle=true;
                         stop();  
                     }
@@ -404,10 +484,7 @@ function startMove(nav){
                     santaTop=0;
                     santaLeft=710;
                     santa.style.marginLeft = `${santaLeft}px`;
-                    santa.style.marginTop = `${santaTop}px`;
-                    
-                    
-                    
+                    santa.style.marginTop = `${santaTop}px`;  
                 }
                 santaLeft<=-25 && (santaPosition=='3 level'|| santaPosition=='2 level') ? santaLeft=710 : santaLeft -=5;
                 santa.classList.remove(`l_${stepNr}`);
@@ -416,7 +493,7 @@ function startMove(nav){
                 santa.style.marginLeft = `${santaLeft}px`;
                 startMove(nav);
             }
-        },80);
+        },60);
     }
     //### END moveLeft ###//
     
@@ -439,8 +516,8 @@ function startMove(nav){
                    santaLeft>=705 ? santaLeft=0 : '';
                    santa.className='santa';
                     stepNr++
-            //stop jumping if ice
-                 if(ice_blocks[0].enabled==true&&(santaLeft+10)>ice_blocks[0].position_1 && (santaLeft+10)<ice_blocks[0].position_2 && santaPosition=='2 level'){
+            //stop jumping if ice or other obstacle
+                 if(ice_blocks[0].enabled==true&&(santaLeft+10)>ice_blocks[0].position_1 && (santaLeft+10)<ice_blocks[0].position_2 && santaPosition=='2 level'||(santaLeft < obstacles[6].position_2 && santaPosition=='2 level') ){
                         stepNr=8;
                         santaTop=143;
                         santa.style.marginTop = `${santaTop}px`;
@@ -474,6 +551,13 @@ function startMove(nav){
                     santaLeft<=0 ? santaLeft=710 : '';
                    santa.className='santa';
                  stepNr++
+                //stop jumping if ice or other obstacle
+                 if(ice_blocks[0].enabled==true&&(santaLeft+10)>ice_blocks[0].position_1 && (santaLeft+10)<ice_blocks[0].position_2 && santaPosition=='2 level'||(santaLeft > obstacles[6].position_1 &&  santaLeft < obstacles[6].position_2+20 &&santaPosition=='2 level') ){
+                     console.log("CAN'T JUMP!");
+                        stepNr=8;
+                        santaTop=143;
+                        santa.style.marginTop = `${santaTop}px`;
+                 }
                     if(stepNr>0 && stepNr <=2){
                         santa.classList.add(`j_l1`);
                         startMove(nav);
@@ -526,7 +610,7 @@ function startMove(nav){
                             hidden=false;
                             stop();
                         }
-                },80);
+                },50);
               
         }
         
@@ -597,7 +681,7 @@ function startMove(nav){
                     }
 
                     stepNr!=5 ? startMove(nav) : stop();
-                },80);
+                },50);
             }
             
         }else{
@@ -757,4 +841,9 @@ function startMove(nav){
     }
     
 }
+//##### end move #####
+
+
+window.onload=createmap(); //create and show Game menu when page is loaded
+
 

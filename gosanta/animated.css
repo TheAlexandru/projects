@@ -266,3 +266,44 @@
     width:42px;
 }
 /*END SANTA style*/
+
+
+
+/*#### SNOWMAN ####*/
+.snowman{
+    width:58px;
+    height:84px;
+    background:url(images/santa_sprite.gif);
+    background-position: -108px -647px;
+    margin-top:18px;
+}
+
+.snowman_2{
+   /* background-position: -227px -647px; */
+    background-position: -285px -646px; 
+}
+
+.snowman_f1{
+    background-position: -167px -646px; 
+}
+.snowman_f2{
+    background-position: -103px -646px;  
+}
+.snowman_f3{
+    background-position: -37px -646px; 
+    margin-left:-8px;
+    width:65px;
+}
+.snowman_f4{
+    background-position: -154px -731px; 
+    margin-left:-11px;
+    width:69px;
+}
+.snowman_f5{
+    background-position: -95px -731px; 
+    width:60px;
+}
+.snowman_f6{
+    background-position: -27px -731px;
+    width:70px;
+}
