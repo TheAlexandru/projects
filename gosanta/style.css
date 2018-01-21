@@ -259,7 +259,7 @@
 
 .life_idnicator{
     margin-top:7px;
-    width:62px;
+    width:60px;
     height:8px;
     background-color:#FF3B96;
     border-radius:2px;
@@ -390,5 +390,21 @@ box-shadow: 1px 1px 1px 0px rgba(190,0,80,1);
     margin-top:5px;
     transform:  scaleX(-1);
 }
+
+.bigSnBall{
+    float:left;
+    margin-top:50px;
+    margin-left:-10px;
+    border-radius:8px;
+    background:url(images/obstacles.png);
+    background-position: -15px -288px; 
+    width:18px;
+    height:16px;
+    position:absolute;
+    z-index: 11;
+}
+
+
+
 
 

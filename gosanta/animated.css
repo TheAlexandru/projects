@@ -276,6 +276,7 @@
     background:url(images/santa_sprite.gif);
     background-position: -108px -647px;
     margin-top:18px;
+    float:left;
 }
 
 .snowman_2{
@@ -307,3 +308,6 @@
     background-position: -27px -731px;
     width:70px;
 }
+
+
+

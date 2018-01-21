@@ -11,12 +11,14 @@ var bars = '';
 var jump = false;
 var obstacle =false;
 var fire_active = false;
-var gift_aduio = new Audio('/sounds/coin.wav');
-var ice_break = new Audio('/sounds/ice_break.wav');
-var ice_broken = new Audio('/sounds/ice_broken.wav');
-var jump_breathing = new Audio('/sounds/breathing-jumping.wav');
-var snow_landing = new Audio('/sounds/snow-land.wav');
-var slide = new Audio('/sounds/slide2.wav');
+var gift_aduio = new Audio('sounds/coin.wav');
+var ice_break = new Audio('sounds/ice_break.wav');
+var ice_broken = new Audio('sounds/ice_broken.wav');
+var jump_breathing = new Audio('sounds/breathing-jumping.wav');
+var snow_landing = new Audio('sounds/snow-land.wav');
+var slide = new Audio('sounds/slide2.wav');
+var damage = new Audio('sounds/damage.wav');
+var santaHurt = new Audio('sounds/santa_hurt.mp3');
 var obstacles = [
     {name: '3 level Bar', enable: false}, 
     {name: '2 level Bar', enable: false},
@@ -25,10 +27,10 @@ var obstacles = [
     {name: 'iceb_t', enable: false},
     {name: 'iceb_r', enable: false},
     {name: 'tree1', enable: true,position_1:-25,position_2:60},
-    {name: 'snowman', enable: true,position_1:179,position_2:100},
+    {name: 'snowman', enable: true,position_1:100,position_2:188,life:100,snowball:false},
     ];
 var win = lose = false;
-var santalife = 100;
+var santalife = 6000;
 
 var gifts ='';//gifts position and number (is added in createmap func )
 var gifts_nr = 0;
@@ -167,23 +169,96 @@ function newSnowMan(){
     var snmfireNr =0;
 function snmFire(){
     if(santaPosition=='2 level'){
-        setTimeout(function(){
-            snmfireNr>0&& snmfireNr<=6 ? snowman.classList.remove(`snowman_f${snmfireNr}`):'';
-            snmfireNr++;
-            snmfireNr<=6 ? snowman.classList.add(`snowman_f${snmfireNr}`):'';
-            snmfireNr>6 && snmfireNr<15 ? snowman.className= 'snowman' : '';
-            snmfireNr>=15 ? snmfireNr=0:'';
-            snmFire();
+        if(obstacles[7].life>0){//snowman life 
+            if(obstacles[7].snowball===false){
+                var div = document.createElement('div');
+                div.className='bigSnBall';
+                div.id = 'bigSnowBall';
+                setTimeout(function(){
+                    snmfireNr>0&& snmfireNr<=6 ? snowman.classList.remove(`snowman_f${snmfireNr}`):'';
+                    snmfireNr++;
+                    snmfireNr<=6 ? snowman.classList.add(`snowman_f${snmfireNr}`):'';
+                    snmfireNr>6 && snmfireNr<15 ? snowman.className= 'snowman' : '';
+                    snmfireNr>=15 ? snmfireNr=0:'';
+                    if(snmfireNr==4){
+                        playarena.children[13].appendChild(div);
+                    };
+                    if(snmfireNr==6){
+                        var snball = document.getElementById('bigSnowBall');
+                        playarena.children[13].removeChild(snball);
+                        div.style.marginLeft = "50px";
+                        playarena.children[13].appendChild(div);
+                        
+                        trhowSnowball();
+                       
+                    }
+                   /* if(snmfireNr==6){
+                        
+                    }*/
+                    snmFire();
+                    
+                },110);
+                
+            }
             
-        },110);
+        }
     }else{
+       
         snowman.className='snowman';
         snmfireNr =0;
         snmAnimate();
     }
 }
+function trhowSnowball(){
+    var snball = document.getElementById('bigSnowBall');
+    var snballPosition = 50;
+  
+    throwIt();
+    function throwIt(){
+          var snballPosition_from0 = snball.offsetLeft;
+          var santalifeBar = document.getElementById('life_bar');
+            setTimeout(function(){
+                if(snballPosition_from0 < santaLeft && santaPosition==='2 level' && hidden===false || hidden===true && snballPosition_from0<710){
+                    snballPosition+=4;
+                    obstacles[7].snowball=true;
+                    snball.style.marginLeft=`${snballPosition}px`;
+                    throwIt();
+                }else{
+                    if(snballPosition_from0 >= santaLeft && snballPosition_from0 <= santaLeft+40){
+                        santaHurt.play();
+                        if(santalife>=12){
+                            santalife-=12;
+                            santalifeBar.style.width=`${santalife}px`;
+                        }else{
+                            playarena.children[13].removeChild(snball);
+                            santaPosition='1 level';
+                            santa.className='';
+                            lose=true;
+                            finish();
+                        }
+                       
+                    }
+                    obstacles[7].snowball=false;
+                    playarena.children[13].removeChild(snball);
+                    snmfireNr =0;
+                    if(santaPosition==='2 level'){
+                       snmFire(); 
+                    }else{
+                        snmAnimate();
+                    }
+                    
+                }
+                
+            },8);
+    
+    }
+    
+   
+   
+   
+}
 function snmAnimate(){
-    if(santaPosition!='2 level'){
+    if(santaPosition!='2 level' && obstacles[7].life>0){
         setTimeout(function(){
             snowman.classList.add('snowman_2');
 
@@ -271,7 +346,7 @@ function finish(){
     jump = false;
     stepNr = 0;
     obstacle=false;
-    skipped=false;
+
     
     var div = document.createElement('div');
     div.className='load';
@@ -286,22 +361,35 @@ function finish(){
         console.log('gameover');
     }
     if(win==true){
+        btn.setAttribute('onclick','restartGame()');
+        btn.innerHTML='You win!';
+        div.appendChild(btn);
         playarena.appendChild(div);
-        
-        console.log('win');
     }
-    if(gifts_nr<3){
-       console.log(gifts_nr,'collect all gifts!');
+    if(gifts_nr<3 && lose==false){
+        btn.setAttribute('onclick','resumeGame()');
+        btn.innerHTML='Collect all gifts!';
+        div.appendChild(btn);
+        playarena.appendChild(div);
+       
        }
     //location.reload();
 }
 //#### end finish game ####
 
-//#### restart Game #####
+//#### restart/resume Game #####
 function restartGame(){
     location.reload();
 }
-
+function resumeGame(){
+    playarena.removeChild(playarena.lastElementChild);
+    /*document.body.setAttribute('onkeydown','move(event)');
+    document.body.setAttribute('onkeyup','stop(event)');*/
+    lastPosition='left';
+    santa.style.marginLeft=`515px`;
+    stop();
+}
+//end
 
 function stop(e){
     
@@ -370,13 +458,19 @@ function move(e){
 function startMove(nav){
     
     console.log(santaLeft);
+    console.log(obstacles[7].enable)
+//if santa touch snowman then gameover
+    if(santaLeft>=obstacles[7].position_1&&santaLeft<=obstacles[7].position_2 && obstacles[7].enable===true){
+        lose=true;
+        finish();
+    }
     
     //find on which level is santa
     if(santaTop<=0){
         santaPosition = "3 level";
-    }else if(santaTop>10 && santaTop<280){
+    }else if(santaTop>10 && santaTop<150){
         santaPosition = "2 level";
-    }else if(santaTop>280){
+    }else if(santaTop>180 && santaTop<290){
         santaPosition = "1 level";
     }
     
@@ -456,7 +550,13 @@ function startMove(nav){
                         obstacle=true;
                         stop();  
                     }else if(obstacles[2].enable==true ){
-                        lose=true;
+                        if(gifts_nr==3&&santalife>0){
+                            win=true;
+                            console.log(gifts_nr,'collect all gifts!');
+                        }
+                        if(santalife<1){
+                            lose=true;
+                        }
                         finish();      
                     }
                     santaLeft>=710 ? santaLeft=-25 : santaLeft +=5;
@@ -517,10 +617,18 @@ function startMove(nav){
                    santa.className='santa';
                     stepNr++
             //stop jumping if ice or other obstacle
-                 if(ice_blocks[0].enabled==true&&(santaLeft+10)>ice_blocks[0].position_1 && (santaLeft+10)<ice_blocks[0].position_2 && santaPosition=='2 level'||(santaLeft < obstacles[6].position_2 && santaPosition=='2 level') ){
+                 if((ice_blocks[0].enabled==true&&(santaLeft+10)>ice_blocks[0].position_1 && (santaLeft+10)<ice_blocks[0].position_2 && santaPosition=='2 level')||(santaLeft < obstacles[6].position_2 && santaPosition=='2 level') || (santaLeft>515 && santaPosition=='1 level')){
+                    
                         stepNr=8;
-                        santaTop=143;
-                        santa.style.marginTop = `${santaTop}px`;
+                     if(santaPosition=='1 level'){santaTop=286};
+                     if(santaPosition=='2 level'){santaTop=143};
+                     if(santaPosition=='3 level'){santaTop=0};
+                       
+                    santa.style.marginTop = `${santaTop}px`;
+                     /*if(santaLeft>=obstacles[7].position_1&&santaLeft<=obstacles[7].position_2 && obstacles[7].enable===true && santaPosition=='2 level'){
+                            lose=true;
+                            finish();
+                        }*/
                  }
             //end stop jumping
                     if(stepNr>0 && stepNr <=2){
@@ -552,7 +660,7 @@ function startMove(nav){
                    santa.className='santa';
                  stepNr++
                 //stop jumping if ice or other obstacle
-                 if(ice_blocks[0].enabled==true&&(santaLeft+10)>ice_blocks[0].position_1 && (santaLeft+10)<ice_blocks[0].position_2 && santaPosition=='2 level'||(santaLeft > obstacles[6].position_1 &&  santaLeft < obstacles[6].position_2+20 &&santaPosition=='2 level') ){
+                 if(ice_blocks[0].enabled==true&&(santaLeft+10)>ice_blocks[0].position_1 && (santaLeft+10)<ice_blocks[0].position_2 && santaPosition=='2 level'||(santaLeft > obstacles[6].position_1 &&  santaLeft < obstacles[6].position_2+20 &&santaPosition=='2 level') || (santaLeft >= obstacles[7].position_1 && santaLeft <= obstacles[7].position_2 && santaPosition=='2 level' && obstacles[7].enable==true) ){
                      console.log("CAN'T JUMP!");
                         stepNr=8;
                         santaTop=143;
@@ -619,6 +727,7 @@ function startMove(nav){
     
     //hide or go down:
     if(nav == 'down'){
+        console.log('topcik',santaTop);
         //if ice block then don't jump!
         if(obstacles[3].enable==false && obstacles[4].enable==false && obstacles[5].enable==false){
             //if bar, go down
