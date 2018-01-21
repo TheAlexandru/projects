@@ -19,6 +19,8 @@ var snow_landing = new Audio('sounds/snow-land.wav');
 var slide = new Audio('sounds/slide2.wav');
 var damage = new Audio('sounds/damage.wav');
 var santaHurt = new Audio('sounds/santa_hurt.mp3');
+var loading = new Audio('sounds/ps_1.mp3');
+var wasted = new Audio('sounds/wasted.mp3');
 var obstacles = [
     {name: '3 level Bar', enable: false}, 
     {name: '2 level Bar', enable: false},
@@ -27,10 +29,11 @@ var obstacles = [
     {name: 'iceb_t', enable: false},
     {name: 'iceb_r', enable: false},
     {name: 'tree1', enable: true,position_1:-25,position_2:60},
-    {name: 'snowman', enable: true,position_1:100,position_2:188,life:100,snowball:false},
+    {name: 'snowman', alive: true,position_1:100,position_2:188,life:100,snowball:false},
     ];
+console.log(obstacles[7].enable);
 var win = lose = false;
-var santalife = 6000;
+var santalife = 60;
 
 var gifts ='';//gifts position and number (is added in createmap func )
 var gifts_nr = 0;
@@ -67,6 +70,8 @@ function giftAnimate(){
 
 //######## NEW MAP #########
 function createmap(){
+    loading.play();
+    
     //create new snowman
     newSnowMan();
     snmAnimate()
@@ -168,7 +173,7 @@ function newSnowMan(){
     //animate snowman
     var snmfireNr =0;
 function snmFire(){
-    if(santaPosition=='2 level'){
+    if(santaPosition=='2 level' && lose==false){
         if(obstacles[7].life>0){//snowman life 
             if(obstacles[7].snowball===false){
                 var div = document.createElement('div');
@@ -312,6 +317,7 @@ function startGame(){
     
 }
 function beginGame(){
+    loading.pause();
     var dialog = document.getElementById('text_area');
     skipped=true;
         setTimeout(function(){
@@ -347,20 +353,33 @@ function finish(){
     stepNr = 0;
     obstacle=false;
 
-    
+    var points = document.createElement('div');
+    points.className='points';
+    points.innerHTML= `Total gifts accumulated: ${gifts_nr}/3`;
     var div = document.createElement('div');
     div.className='load';
     var btn = document.createElement('div');
     btn.className = 'newG-btn';
+    var over = document.createElement('div');
+    over.className='gameOver';
     
     if(lose==true){
-        btn.setAttribute('onclick','restartGame()');
-        btn.innerHTML='Game Over!';
-        div.appendChild(btn);
+        wasted.play();
+        setTimeout(function(){
+            div.appendChild(over);
+        },200)
+       
         playarena.appendChild(div);
-        console.log('gameover');
+        setTimeout(function(){
+            div.appendChild(points);
+             btn.setAttribute('onclick','restartGame()');
+            btn.innerHTML='New Game';
+            div.appendChild(btn);
+        },2500)
     }
     if(win==true){
+        
+        
         btn.setAttribute('onclick','restartGame()');
         btn.innerHTML='You win!';
         div.appendChild(btn);
@@ -458,12 +477,7 @@ function move(e){
 function startMove(nav){
     
     console.log(santaLeft);
-    console.log(obstacles[7].enable)
-//if santa touch snowman then gameover
-    if(santaLeft>=obstacles[7].position_1&&santaLeft<=obstacles[7].position_2 && obstacles[7].enable===true){
-        lose=true;
-        finish();
-    }
+
     
     //find on which level is santa
     if(santaTop<=0){
@@ -575,6 +589,10 @@ function startMove(nav){
     if(nav == 'left'){
         setTimeout(function(){
             if(stopped != true){
+                //if snowman
+                if(santaLeft >= obstacles[7].position_1 && santaLeft <= obstacles[7].position_2 && santaPosition=='2 level' && obstacles[7].alive==true){
+                    lose=true; finish();
+                }
                 if((obstacles[0].enable || obstacles[1].enable|| obstacles[3].enable || obstacles[4].enable)==true|| (santaLeft > obstacles[6].position_1 &&  santaLeft < obstacles[6].position_2+10 &&santaPosition=='2 level')){
                         obstacle=true;
                         stop();  
@@ -660,8 +678,12 @@ function startMove(nav){
                    santa.className='santa';
                  stepNr++
                 //stop jumping if ice or other obstacle
-                 if(ice_blocks[0].enabled==true&&(santaLeft+10)>ice_blocks[0].position_1 && (santaLeft+10)<ice_blocks[0].position_2 && santaPosition=='2 level'||(santaLeft > obstacles[6].position_1 &&  santaLeft < obstacles[6].position_2+20 &&santaPosition=='2 level') || (santaLeft >= obstacles[7].position_1 && santaLeft <= obstacles[7].position_2 && santaPosition=='2 level' && obstacles[7].enable==true) ){
-                     console.log("CAN'T JUMP!");
+                 if(ice_blocks[0].enabled==true&&(santaLeft+10)>ice_blocks[0].position_1 && (santaLeft+10)<ice_blocks[0].position_2 && santaPosition=='2 level'||(santaLeft > obstacles[6].position_1 &&  santaLeft < obstacles[6].position_2+20 &&santaPosition=='2 level') || (santaLeft >= obstacles[7].position_1 && santaLeft <= obstacles[7].position_2 && santaPosition=='2 level' && obstacles[7].alive==true) ){
+                    if(santaLeft >= obstacles[7].position_1 && santaLeft <= obstacles[7].position_2 && santaPosition=='2 level' && obstacles[7].alive==true){
+                        lose=true;
+                        finish();
+                    }
+                     
                         stepNr=8;
                         santaTop=143;
                         santa.style.marginTop = `${santaTop}px`;
