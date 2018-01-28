@@ -8,6 +8,19 @@
     background-color:#60A4B5;
     border-radius: 2px;
 }
+
+
+#loadGif{
+    width:726px;
+    height:454px;
+  
+    background: url(images/loading_logo.gif);
+    background-position: -40px -60px;
+      z-index: 200;
+    position:absolute;
+}
+
+
 .field{
     float:left;
     width:66px;
@@ -426,6 +439,50 @@ box-shadow: 1px 1px 1px 0px rgba(190,0,80,1);
     
 }
 
+#instruction{
+   padding:10px;
+    margin:auto;
+    font-size:20px;
+    width:660px;
+    height:200px;
+    border:1px solid #666;
+}
+
+#instruction img{
+    
+    margin-left:100px;
+    margin-top:20px;
+}
+
+#up_txt{
+    margin-top:-160px;
+    margin-left:146px;
+}
+
+#left_txt{
+    margin-top:89px;
+}
+
+#right_txt{
+    margin-left:300px;
+    margin-top:-19px;
+}
+
+#down_txt{
+    margin-left:140px;
+    margin-top:22px;
+}
+
+#fbutton{
+    float:right;
+    margin-right: 80px;
+    padding-top:30px;
+}  
+
+#f_txt{
+    margin-left:460px;
+    margin-top:-50px;
+}
 
 
 

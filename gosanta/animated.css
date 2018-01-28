@@ -1,13 +1,7 @@
 /*Santa style:*/
 .santa{
 
- /*   
-    width:40px;
-    height:52px;
-    border: 1px solid blue;
-    */
-    /*background-image: url(images/santa_sprite.gif);*/
-   /* background-position: -312px -3px;*/
+
    
     
     
@@ -274,7 +268,7 @@
     width:58px;
     height:84px;
     background:url(images/santa_sprite.gif);
-    background-position: -108px -647px;
+    background-position: -108px -647px; 
     margin-top:18px;
     float:left;
 }
@@ -309,5 +303,27 @@
     width:70px;
 }
 
+
+.snowman_d1{
+    background-position: -231px -816px; 
+    height:80px;
+    margin-top:22px;
+}
+.snowman_d2{
+    background-position: -289px -816px;
+    height:80px;
+    margin-top:22px;
+}
+.snowman_d3{
+    background-position: -346px -816px; 
+    height:80px;
+    margin-top:22px;
+}
+.snowman_d4{
+    background-position: -407px -816px; 
+    height:80px;
+    width:48px;
+    margin-top:22px;
+}
 
 

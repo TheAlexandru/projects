@@ -21,6 +21,9 @@ var damage = new Audio('sounds/damage.wav');
 var santaHurt = new Audio('sounds/santa_hurt.mp3');
 var loading = new Audio('sounds/ps_1.mp3');
 var wasted = new Audio('sounds/wasted.mp3');
+var backgroundSong = new Audio('sounds/Jingle Bells - Christmas in 8 bit.mp3');
+var finishTheJob = new Audio('sounds/dont-leave-the-job-unfinished.mp3')
+var winSound = new Audio('sounds/victoryff.swf.mp3')
 var obstacles = [
     {name: '3 level Bar', enable: false}, 
     {name: '2 level Bar', enable: false},
@@ -29,9 +32,8 @@ var obstacles = [
     {name: 'iceb_t', enable: false},
     {name: 'iceb_r', enable: false},
     {name: 'tree1', enable: true,position_1:-25,position_2:60},
-    {name: 'snowman', alive: true,position_1:100,position_2:188,life:100,snowball:false},
+    {name: 'snowman', alive: true,position_1:100,position_2:188,life:120,snowball:false},
     ];
-console.log(obstacles[7].enable);
 var win = lose = false;
 var santalife = 60;
 
@@ -263,7 +265,7 @@ function trhowSnowball(){
    
 }
 function snmAnimate(){
-    if(santaPosition!='2 level' && obstacles[7].life>0){
+    if(santaPosition!='2 level' && obstacles[7].life>=0){
         setTimeout(function(){
             snowman.classList.add('snowman_2');
 
@@ -277,13 +279,27 @@ function snmAnimate(){
         /*setTimeout(snmAnimate,500);*/
     }
 }
+function noLife(){
+    var snowman = document.getElementById('snowman');
+    var nr = 0;
+    function dieAnimated(){
+        setTimeout(function(){
+            if(nr<4){
+                if(nr>0){snowman.classList.remove(`snowman_d${nr}`)};
+                nr++;
+                snowman.classList.add(`snowman_d${nr}`);
+                dieAnimated();
+            }
+        },300);
+        console.log('animated!!!');
+    }
+    dieAnimated();
+}
 
 //######## END SnowMan ########
 
 
-
 //#### Start NEW GAME ####
-
 var temp = document.createElement('div');
 function startGame(){
     var dialog = document.getElementById('text_area');
@@ -318,6 +334,8 @@ function startGame(){
 }
 function beginGame(){
     loading.pause();
+    backgroundSong.play();
+    backgroundSong.volume = 0.5;
     var dialog = document.getElementById('text_area');
     skipped=true;
         setTimeout(function(){
@@ -367,7 +385,7 @@ function finish(){
         wasted.play();
         setTimeout(function(){
             div.appendChild(over);
-        },200)
+        },350)
        
         playarena.appendChild(div);
         setTimeout(function(){
@@ -378,7 +396,8 @@ function finish(){
         },2500)
     }
     if(win==true){
-        
+        backgroundSong.pause();
+        winSound.play();
         
         btn.setAttribute('onclick','restartGame()');
         btn.innerHTML='You win!';
@@ -386,6 +405,7 @@ function finish(){
         playarena.appendChild(div);
     }
     if(gifts_nr<3 && lose==false){
+        finishTheJob.play(); 
         btn.setAttribute('onclick','resumeGame()');
         btn.innerHTML='Collect all gifts!';
         div.appendChild(btn);
@@ -401,7 +421,7 @@ function restartGame(){
     location.reload();
 }
 function resumeGame(){
-    playarena.removeChild(playarena.lastElementChild);
+   playarena.removeChild(playarena.lastElementChild);
     /*document.body.setAttribute('onkeydown','move(event)');
     document.body.setAttribute('onkeyup','stop(event)');*/
     lastPosition='left';
@@ -827,7 +847,6 @@ function startMove(nav){
             var sBallPosition =  santaLeft;
             var shootDirection = lastPosition;
             snowball.className= 'snowball';
-            
                 if(shootDirection=='right'){
                     sBallPosition+=35;
                 }
@@ -837,12 +856,9 @@ function startMove(nav){
                
                 setTimeout(function(){
                     if(shootDirection=='right' && sBallPosition > -5 && sBallPosition < 740) {
-                        
-                       
                         fireStep++;
                         if(fireStep <= 2){
-                            
-                                santa.classList.add('fire_1_r');
+                             santa.classList.add('fire_1_r');
                             }else if(fireStep>2 && fireStep<5){
                                 santa.classList.remove('fire_1_r');  
                                 santa.classList.add('fire_2_r');  
@@ -869,13 +885,10 @@ function startMove(nav){
                                   ice_blocks[2].broken++;
                                 }
                                 breakIce(2,ice_blocks[2].broken);  
-                                
-                                
                             }else{
                                 fire();
                             }
-                        
-                       
+
                     }else if(shootDirection=='left' && sBallPosition < 740 && sBallPosition > -5){
                             fireStep++;
                             if(fireStep <= 2){
@@ -908,6 +921,24 @@ function startMove(nav){
                                 breakIce(2,ice_blocks[2].broken);  
                                 
                                 
+                            }else if(santaPosition=='2 level' && sBallPosition>obstacles[7].position_1 && sBallPosition<obstacles[7].position_2){
+                                 obstacles[7].life -= 20;
+                                
+                               damage.play(); if(obstacles[7].life>=0){
+                                   stopBall();
+                                    if(obstacles[7].life<=0){
+                                         obstacles[7].alive = false;
+                                        //var snowman = document.getElementById('snowman');
+                                       // document.getElementById('bigSnowBall').className='';
+                                        noLife();
+                                       // snowman.classList.add('snowman_d1');
+                                    
+                                       
+                                    }
+                                }else{
+                                    fire();
+                                }
+                                
                             }else{
                                 fire();
                             }
@@ -932,9 +963,6 @@ function startMove(nav){
                         
                         if(nr!=1){
                             block[b_nr].classList.remove(`break_ice_${nr-1}`);  
-                          /*  if(ice_blocks[0].enabled==false && ice_blocks[1].enabled == false && ice_blocks[2].enabled==false){
-                                  
-                            }*/
                         }
                         
                         if(nr>0&& nr<4){
@@ -975,6 +1003,16 @@ function startMove(nav){
 //##### end move #####
 
 
-window.onload=createmap(); //create and show Game menu when page is loaded
+window.onload=loadGame(); //create and show Game menu when page is loaded
+
+function loadGame(){
+    var arena = document.getElementById('playarena');
+    var load = document.createElement('div');
+    load.id = 'loadGif';
+    arena.appendChild(load);
+    createmap();
+    setTimeout(function(){ arena.removeChild(document.getElementById('loadGif'));
+    },8000);
+}
 
 
